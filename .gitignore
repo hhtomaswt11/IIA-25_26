@@ -1,0 +1,40 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+env/
+venv/
+ENV/
+
+# Rasa
+
+models/
+*.db
+*.sqlite
+**pycache**/
+logs/
+**pycache**/
+*.log
+.rasa/
+# Environment variables
+
+.env
+
+# IDEs e editor
+
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# MacOS
+
+.DS_Store
+
+# Jupyter
+
+.ipynb_checkpoints/
