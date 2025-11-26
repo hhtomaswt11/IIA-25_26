@@ -1,4 +1,4 @@
-# Agente de Descoberta de Receitas (Rasa)
+# Agente de Descoberta de Receitas (Rasa Pro Calm)
 
 Este repositório contém um agente conversacional construído com Rasa para descoberta e seleção de receitas. O agente faz filtragem por categoria, tempo, dificuldade e restrições dietéticas, e apresenta resultados estruturados que permitem ao utilizador selecionar uma receita e obter os ingredientes e passos diretamente pelo Rasa (lógica server-side). É uma solução híbrida com uso de LLM e técnicas de processamento de linguagem natural (NLP) tradicionais para oferecer uma experiência robusta e personalizada ao utilizador.
 
