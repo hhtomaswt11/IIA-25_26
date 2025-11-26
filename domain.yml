@@ -1,34 +1,120 @@
 version: "3.1"
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
 
 intents:
   - greet
   - goodbye
   - affirm
   - deny
-  - mood_great
-  - mood_unhappy
-  - bot_challenge
+  - start_discovery
 
+actions:
+  - action_search_recipes
+
+# Slots used in flows
+slots:
+  recipe_category:
+    type: categorical
+    values: [entrada, principal, sobremesa]
+    mappings: [{type: from_llm}]
+  cook_time:
+    type: text
+    mappings: [{type: from_llm}]
+  difficulty:
+    type: categorical
+    values: [facil, medio, dificil, qualquer]
+    mappings: [{type: from_llm}]
+  dietary_restrictions:
+    type: categorical
+    values: [nenhuma, vegetariano, vegano, sem_gluten, outro]
+    mappings: [{type: from_llm}]
+  avoid_ingredients:
+    type: text
+    mappings: [{type: from_llm}]
+  caloric_preference:
+    type: categorical
+    values: [leve, moderado, sem_restricao]
+    mappings: [{type: from_llm}]
+  search_results:
+    type: any
+    influence_conversation: false
+    mappings: [{type: custom}]
+
+# Responses (utterances) used by the flow and other parts of the bot
 responses:
   utter_greet:
-  - text: "Hey! How are you?"
-
-  utter_cheer_up:
-  - text: "Here is something to cheer you up:"
-    image: "https://i.imgur.com/nGF1K8f.jpg"
-
-  utter_did_that_help:
-  - text: "Did that help you?"
-
-  utter_happy:
-  - text: "Great, carry on!"
-
+    - text: "Olá! Sou o seu assistente de receitas. No que posso ajudar?"
   utter_goodbye:
-  - text: "Bye"
+    - text: "Adeus! Espero ter ajudado a encontrar algo delicioso."
+  utter_ask_rephrase:
+    - text: "Desculpe, não entendi. Pode reformular o que procura?"
 
-  utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
+  utter_ask_recipe_category:
+    - text: "Ótimo! Vamos encontrar a receita perfeita para ti. Tens alguma preferência de tipo de prato?"
+      buttons:
+        - payload: "Entrada"
+          title: Entrada
+        - payload: "Prato Principal"
+          title: Prato Principal
+        - payload: "Sobremesa"
+          title: Sobremesa
 
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  utter_ask_cook_time:
+    - text: "Quanto tempo tens disponível para cozinhar?"
+      buttons:
+        - payload: "Até 30min"
+          title: Até 30min
+        - payload: "30-60min"
+          title: 30-60min
+        - payload: "Mais de 1h"
+          title: Mais de 1h
+
+  utter_ask_difficulty:
+    - text: "E que nível de dificuldade procuras?"
+      buttons:
+        - payload: "Fácil"
+          title: Fácil
+        - payload: "Médio"
+          title: Médio
+        - payload: "Difícil"
+          title: Difícil
+        - payload: "Qualquer"
+          title: Qualquer
+
+  utter_ask_dietary_restrictions:
+    - text: "Tens alguma restrição alimentar ou ingrediente que queiras evitar?"
+      buttons:
+        - payload: "Nenhuma"
+          title: Nenhuma
+        - payload: "Vegetariano"
+          title: Vegetariano
+        - payload: "Vegano"
+          title: Vegano
+        - payload: "Sem Glúten"
+          title: Sem Glúten
+        - payload: "Outro"
+          title: Outro
+
+  utter_ask_avoid_ingredients:
+    - text: "Certo. Por favor, diz-me que ingredientes específicos queres evitar (Ex: ovo, leite, amendoim)."
+
+  utter_ask_caloric_preference:
+    - text: "Queres uma opção mais leve ou não te importas com as calorias?"
+      buttons:
+        - payload: "Leve"
+          title: Leve (até 300 cal)
+        - payload: "Moderado"
+          title: Moderado (300-600 cal)
+        - payload: "Sem restrição"
+          title: Sem restrição
+
+  utter_results_summary:
+    - text: "Encontrei {num_results} receitas perfeitas para ti! 🍳 {results_text} Qual te interessa?"
+
+  utter_default_fallback:
+    - text: "Desculpe, não entendi o que procura. Pode reformular a sua pergunta?"
+
+  utter_cannot_handle:
+    - text: "Desculpe, não estou treinado para isso. Pode reformular ou perguntar outra coisa sobre receitas?"

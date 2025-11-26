@@ -1,0 +1,34 @@
+version: "3.1"
+flows:
+  recipe_discovery:
+    description: Guia o usuário passo a passo através de todos os filtros de receita.
+    name: Receita por Preferências
+    steps:
+      - collect: recipe_category
+        description: "Tipo de prato (Entrada, Prato Principal, Sobremesa)."
+        
+      - collect: cook_time
+        description: "Tempo disponível (Até 30min, 30-60min, Mais de 1h, Tanto faz)."
+
+      - collect: difficulty
+        description: "Nível de dificuldade (Fácil, Médio, Difícil, Qualquer)."
+
+      - collect: dietary_restrictions
+        description: "Restrições dietéticas (Ex: Vegetariano, Vegano, Sem Glúten, Sem Lactose, Nenhuma, Outro)."
+        next:
+          # Se o LLM preencher 'outro', ramifica para 'avoid_ingredients'
+          - if: "slots.dietary_restrictions contains 'outro'"
+            then:
+              - collect: avoid_ingredients
+                description: "Ingredientes específicos que o usuário deseja evitar (Ex: 'ovo', 'leite')."
+                next: collect_caloric  # <-- Continua o fluxo principal
+          - else: collect_caloric # <-- Se não for 'outro', avança para a caloria.
+        
+      # Passo nomeado para ser o destino do 'next'
+      - id: collect_caloric 
+        collect: caloric_preference
+        description: "Preferencia calórica (Leve, Moderado, Sem restrição)."
+        
+      - id: final_search 
+        action: action_search_recipes
+        next: END
