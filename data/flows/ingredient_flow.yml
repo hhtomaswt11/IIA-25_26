@@ -1,0 +1,23 @@
+version: "3.1"
+
+flows:
+  ingredient_discovery:
+    description: Sugere receitas com base nos ingredientes que o utilizador já tem em casa.
+    name: Receita por Ingredientes
+    steps:
+      - collect: available_ingredients
+        description: "Ingredientes principais que o utilizador já indicou na mensagem (por exemplo, frango, batatas, entre outros)."
+
+      - collect: has_more_ingredients
+        description: "Pergunta se o utilizador quer acrescentar mais ingredientes."
+        next:
+          - if: "slots.has_more_ingredients == 'sim'"
+            then:
+              - collect: additional_ingredients
+                description: "Ingredientes extra que o utilizador quer usar."
+                next: search_by_ingredients
+          - else: search_by_ingredients
+
+      - id: search_by_ingredients
+        action: action_search_recipes_by_ingredients
+        next: END

@@ -2,7 +2,7 @@ rasa
 rasa-sdk
 pandas
 numpy
-google-generative-ai
+google-generativeai
 
 
 

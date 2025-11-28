@@ -102,7 +102,7 @@ def _load_recipes(path: str) -> pd.DataFrame:
         df['tempo_minutes'] = df.get('tempo_total', '').astype(str).apply(_parse_time_to_minutes)
         df['calorias_num'] = df.get('calorias', '').astype(str).apply(_parse_calories)
 
-        print(f"--- Dataset Carregado: {len(df)} receitas ---")
+        #print(f"--- Dataset Carregado: {len(df)} receitas ---")
         return df
     except FileNotFoundError:
         print(f"!!! ERRO: Ficheiro não encontrado: {path}")
@@ -313,13 +313,21 @@ class ActionSearchRecipes(Action):
         top_n = 5
         top = df.head(top_n)
         results_lines = []
-        
+        idx = 1
         for i, row in top.iterrows():
             title = row.get('titulo', '')
             info = f"{row.get('dificuldade','')} | {row.get('tempo_total','')} | {row.get('calorias','')}"
-            results_lines.append(f"{i+1}. **{title}** ({info})")
+            # results_lines.append(f"{i+1}. **{title}** ({info})")
+            results_lines.append(f"{idx}. **{title}** ({info})")
+            idx = idx + 1 
+
 
         text_out = "\n".join(results_lines)
         dispatcher.utter_message(text=f"Encontrei {num_results} receitas! 🥘 Aqui estão as melhores:\n\n{text_out}")
 
         return [SlotSet('search_results', top.to_dict('records'))]
+
+
+
+
+

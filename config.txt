@@ -1,0 +1,57 @@
+Ajuda para configurar o projeto, para mim funcionou assim. 
+Apagar este ficheiro mais tarde ou usar no README.md para ajudar na configuração
+do projeto. 
+
+criar .env na raiz e colocar as chaves do rasa e gemini (tal como está no discord)
+source .env (ativar o env)
+
+criar ambiente virtual (python) 
+python3 -m venv .venv  ; source .venv/bin/activate
+
+
+verificar ter o rasa pro version 3.14 dentro do venv:
+pip uninstall -y rasa rasa-sdk -> remover o rasa atual da venv (caso nao seja o PRO)
+
+pip install rasa-pro -> instalar rasa pro na venv 
+Alternativa:
+pip install "rasa-pro==3.14.3"
+pip install "rasa-sdk==3.14.0"
+
+verificar ter 
+_26$ rasa --version
+Rasa Pro Version  :         3.14.3
+Minimum Compatible Version: 3.14.0rc3
+Rasa SDK Version  :         3.14.0
+Python Version    :         3.10.12
+Operating System  :         
+Python Path       :      
+License Expires   :         
+
+dentro da venv 
+
+
+
+
+
+
+echo $RASA_LICENSE
+echo $GEMINI_API_KEY
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+PERIGOSO: pip install -r requirements.txt  -> melhor instalar só a numpy generative ai e pandas usando pip install para estas 3 bibliotecas ( pip install pandas numpy google-generative-ai
+), se der erro no grpcio, fazer -> pip install "grpcio==1.66.2" e pip install "grpcio-status==1.66.2"
+
+source .env (ativar o venv)
+
+se der erro no rasa pro nlu, fazer pip install "rasa-pro[nlu]==3.14.3"
+
+rasa train -> em principio nao dara erros 
+
+rasa run actions --debug num terminal (deixar correr...)
+rasa shell noutro terminal (usar este para o chatbot)
+(GARANTIR ESTAR DENTRO DA VENV EM AMBOS OS TERMINAIS)
+
+
+

@@ -6,6 +6,11 @@ rules:
       - intent: start_discovery
       - action: action_search_recipes
 
+  - rule: Start recipe discovery
+    steps:
+      - intent: ingredient_discovery
+      - action: action_search_recipes_by_ingredients
+
   - rule: Fallback - Responder em Português
     steps:
       - intent: nlu_fallback

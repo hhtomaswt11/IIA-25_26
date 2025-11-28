@@ -9,9 +9,11 @@ intents:
   - affirm
   - deny
   - start_discovery
+  - ingredient_discovery
 
 actions:
   - action_search_recipes
+  - action_search_recipes_by_ingredients
 
 # Slots used in flows
 slots:
@@ -40,7 +42,22 @@ slots:
   search_results:
     type: any
     influence_conversation: false
-    mappings: [{type: custom}]
+    mappings: [{type: controlled}]
+  available_ingredients:
+    type: text
+    mappings:
+      - type: from_llm
+
+  has_more_ingredients:
+    type: categorical
+    values: [sim, nao]
+    mappings:
+      - type: from_llm
+
+  additional_ingredients:
+    type: text
+    mappings:
+      - type: from_llm
 
 # Responses (utterances) used by the flow and other parts of the bot
 responses:
@@ -118,3 +135,20 @@ responses:
 
   utter_cannot_handle:
     - text: "Desculpe, não estou treinado para isso. Pode reformular ou perguntar outra coisa sobre receitas?"
+  
+  utter_ask_available_ingredients:
+    - text: "Que ingredientes tens neste momento em casa? Podes listar, por exemplo: frango, batata, cenoura."
+
+  utter_ask_has_more_ingredients:
+    - text: "Tens mais algum ingrediente que queiras usar?"
+      buttons:
+        - title: "Sim"
+          payload: "Sim"
+        - title: "Não, só esses"
+          payload: "Não, só esses"
+
+  utter_ask_additional_ingredients:
+    - text: "Perfeito! Diz-me então que outros ingredientes tens (por exemplo: alho, azeite, limão)."
+
+  utter_ingredient_results:
+    - text: "{results_text}"

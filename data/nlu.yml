@@ -25,7 +25,6 @@ nlu:
   - intent: deny
     examples: |
       - Não
-      - De jeito nenhum
       - Nunca
       - De forma alguma
 
@@ -34,5 +33,14 @@ nlu:
     examples: |
       - Quero encontrar uma receita
       - Ajuda-me a encontrar uma receita
-      - Estou a procurar por receitas
       - Podes-me sugerir uma receita?
+      
+  - intent: ingredient_discovery
+    examples: |
+      - Tenho frango, o que posso fazer?
+      - Tenho frango e batatas, o que posso cozinhar?
+      - Tenho [frango](available_ingredients) e [batata](available_ingredients)
+      - O que posso fazer com frango?
+      - Só tenho batatas e ovos em casa
+      - Tenho estes ingredientes: frango, batatas e cenoura
+
