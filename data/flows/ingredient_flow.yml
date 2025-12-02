@@ -6,12 +6,12 @@ flows:
     name: Receita por Ingredientes
     steps:
       - collect: available_ingredients
-        description: "Ingredientes principais que o utilizador já indicou na mensagem (por exemplo, frango, batatas, entre outros)."
+        description: "Ingredientes principais que o utilizador já indicou."
 
       - collect: has_more_ingredients
         description: "Pergunta se o utilizador quer acrescentar mais ingredientes."
         next:
-          - if: "slots.has_more_ingredients == 'sim'"
+          - if: slots.has_more_ingredients == "sim"
             then:
               - collect: additional_ingredients
                 description: "Ingredientes extra que o utilizador quer usar."
@@ -20,4 +20,44 @@ flows:
 
       - id: search_by_ingredients
         action: action_search_recipes_by_ingredients
+        next: show_results_by_ingredients
+
+      - id: show_results_by_ingredients
+        action: utter_ask_selected_recipe_number
+        next: select_recipe_by_ingredients
+
+      - id: select_recipe_by_ingredients
+        collect: selected_recipe_number
+        description: "Número da receita que o utilizador quer ver em detalhe."
+        next: show_recipe_details_by_ingredients
+
+      - id: show_recipe_details_by_ingredients
+        action: action_show_recipe_details
+        next: ask_start_cooking_ing  # <-- MUDANÇA: Continuação direta
+
+      # --- LÓGICA DE INÍCIO DE COZINHA (MERGED) ---
+      - id: ask_start_cooking_ing
+        collect: cooking_choice
+        description: "Escolha do utilizador para começar a cozinhar"
+        next:
+          - if: slots.cooking_choice == "começar"
+            then: start_cooking_ing
+          - if: slots.cooking_choice == "ver_outra"
+            then: search_by_ingredients # Volta à pesquisa
+          - else: end_flow_ing
+
+      - id: start_cooking_ing
+        action: action_start_cooking_mode
+        next: show_first_step_ing
+
+      - id: show_first_step_ing
+        action: action_next_step
+        next: display_step_ing
+
+      - id: display_step_ing
+        action: action_show_current_step
+        next: END
+
+      - id: end_flow_ing
+        action: utter_goodbye
         next: END

@@ -1,0 +1,34 @@
+version: "3.1"
+
+flows:
+  cooking_confirmation_flow:
+    description: Permite ao utilizador decidir o que fazer após ver uma receita.
+    name: Confirmação de Cozinha
+    steps:
+      - collect: cooking_choice
+        description: "Escolha do utilizador"
+        next:
+          - if: slots.cooking_choice == "começar"
+            then: start_cooking
+          - if: slots.cooking_choice == "ver_outra"
+            then: go_back_to_discovery
+          - else: end_flow
+
+      - id: start_cooking
+        action: action_start_cooking_mode
+        next: show_first_step
+
+      - id: show_first_step
+        action: action_next_step
+        next: display_step
+
+      - id: display_step
+        action: action_show_current_step
+        next: END
+
+      - id: go_back_to_discovery
+        link: recipe_discovery
+
+      - id: end_flow
+        action: utter_goodbye
+        next: END

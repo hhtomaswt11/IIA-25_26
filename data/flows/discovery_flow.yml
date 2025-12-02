@@ -1,34 +1,74 @@
 version: "3.1"
+
 flows:
   recipe_discovery:
-    description: Guia o usuário passo a passo através de todos os filtros de receita.
+    description: Guia o utilizador através de filtros para encontrar receitas.
     name: Receita por Preferências
     steps:
       - collect: recipe_category
-        description: "Tipo de prato (Entrada, Prato Principal, Sobremesa)."
+        description: "Tipo de prato desejado"
         
       - collect: cook_time
-        description: "Tempo disponível (Até 30min, 30-60min, Mais de 1h, Tanto faz)."
+        description: "Tempo disponível para cozinhar"
 
       - collect: difficulty
-        description: "Nível de dificuldade (Fácil, Médio, Difícil, Qualquer)."
+        description: "Nível de dificuldade preferido"
 
       - collect: dietary_restrictions
-        description: "Restrições dietéticas (Ex: Vegetariano, Vegano, Sem Glúten, Sem Lactose, Nenhuma, Outro)."
+        description: "Restrições alimentares"
         next:
-          # Se o LLM preencher 'outro', ramifica para 'avoid_ingredients'
-          - if: "slots.dietary_restrictions contains 'outro'"
+          - if: slots.dietary_restrictions == "outro"
             then:
               - collect: avoid_ingredients
-                description: "Ingredientes específicos que o usuário deseja evitar (Ex: 'ovo', 'leite')."
-                next: collect_caloric  # <-- Continua o fluxo principal
-          - else: collect_caloric # <-- Se não for 'outro', avança para a caloria.
+                description: "Ingredientes a evitar"
+                next: collect_caloric
+          - else: collect_caloric
         
-      # Passo nomeado para ser o destino do 'next'
       - id: collect_caloric 
         collect: caloric_preference
-        description: "Preferencia calórica (Leve, Moderado, Sem restrição)."
+        description: "Preferência calórica"
+        next: final_search
         
       - id: final_search 
         action: action_search_recipes
+        next: show_results
+
+      - id: show_results
+        action: utter_ask_selected_recipe_number
+        next: select_recipe_step
+
+      - id: select_recipe_step
+        collect: selected_recipe_number
+        description: "Número da receita escolhida"
+        next: show_recipe_details
+
+      - id: show_recipe_details
+        action: action_show_recipe_details
+        next: ask_start_cooking_pref # <-- MUDANÇA: Continuação direta
+
+      # --- LÓGICA DE INÍCIO DE COZINHA (MERGED) ---
+      - id: ask_start_cooking_pref
+        collect: cooking_choice
+        description: "Escolha do utilizador para começar a cozinhar"
+        next:
+          - if: slots.cooking_choice == "começar"
+            then: start_cooking_pref
+          - if: slots.cooking_choice == "ver_outra"
+            then: final_search # Volta à pesquisa
+          - else: end_flow_pref
+
+      - id: start_cooking_pref
+        action: action_start_cooking_mode
+        next: show_first_step_pref
+
+      - id: show_first_step_pref
+        action: action_next_step
+        next: display_step_pref
+
+      - id: display_step_pref
+        action: action_show_current_step
+        next: END
+
+      - id: end_flow_pref
+        action: utter_goodbye
         next: END

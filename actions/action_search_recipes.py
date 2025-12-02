@@ -323,9 +323,30 @@ class ActionSearchRecipes(Action):
 
 
         text_out = "\n".join(results_lines)
-        dispatcher.utter_message(text=f"Encontrei {num_results} receitas! 🥘 Aqui estão as melhores:\n\n{text_out}")
+       # dispatcher.utter_message(text=f"Encontrei {num_results} receitas! 🥘 Aqui estão as melhores:\n\n{text_out}")
+        dispatcher.utter_message(
+            text=f"Encontrei {num_results} receitas! 🥘 Aqui estão as melhores:\n\n{text_out}" # \n\nQueres ver alguma receita em específico? (ex: 'receita 1' ou apenas '1')"
+        )
 
         return [SlotSet('search_results', top.to_dict('records'))]
+    
+        # text_out = "\n".join(results_lines)
+        
+        # dispatcher.utter_message(
+        #     text=f"Encontrei {num_results} receitas! 🥘 Aqui estão as melhores:\n\n{text_out}",
+        #     buttons=[
+        #         {"title": "Ver receita 1", "payload": "/select_recipe"},
+        #         {"title": "Ver receita 2", "payload": "/select_recipe"},
+        #         {"title": "Ver receita 3", "payload": "/select_recipe"},
+        #         {"title": "Ver receita 4", "payload": "/select_recipe"},
+        #         {"title": "Ver receita 5", "payload": "/select_recipe"}
+        #     ]
+        # )
+
+        # return [SlotSet('search_results', top.to_dict('records'))]
+    
+    
+    
 
 
 

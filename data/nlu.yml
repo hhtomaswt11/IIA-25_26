@@ -21,20 +21,29 @@ nlu:
       - Claro
       - Com certeza
       - Definitivamente
+      - Concordo
+      - Perfeito
+      - Exato
 
   - intent: deny
     examples: |
       - Não
       - Nunca
       - De forma alguma
+      - Negativo
 
-# fluxo principal de descoberta de receitas
+  # FLUXO 1: Descoberta de receitas (GERAL)
   - intent: start_discovery
     examples: |
+      - Sugere-me uma receita
       - Quero encontrar uma receita
       - Ajuda-me a encontrar uma receita
       - Podes-me sugerir uma receita?
+      - Quero cozinhar algo, mostra-me receitas
+      - Ver receitas disponíveis
+      - Encontrar algo para cozinhar
       
+  # FLUXO 2: Descoberta por ingredientes      
   - intent: ingredient_discovery
     examples: |
       - Tenho frango, o que posso fazer?
@@ -44,3 +53,126 @@ nlu:
       - Só tenho batatas e ovos em casa
       - Tenho estes ingredientes: frango, batatas e cenoura
 
+  # FLUXO 3: Selecionar receita 
+  - intent: select_recipe
+    examples: |
+      - Quero fazer a receita 1 
+      - Quero a receita 2 
+      - Quero ver a receita 1
+      - Mostra a receita número 2
+      - A terceira
+      - Receita 3
+      - A primeira receita
+      - Mostra a 2
+      - Ver receita 4
+      - Quero a receita número 1
+      - A receita 5
+      - Número 2
+      - 3
+      - 1
+      - A segunda
+      - A quarta 
+
+  # NOVO: Iniciar modo passo-a-passo
+  - intent: start_cooking_mode
+    examples: |
+      - Começar modo passo-a-passo
+      - Iniciar modo passo-a-passo
+      - Modo passo a passo
+      - Quero fazer esta receita agora
+      - Vamos cozinhar esta receita
+      - Começar a cozinhar esta
+      - Fazer esta receita passo a passo
+      - Cozinhar esta receita
+      - Fazer passo a passo
+      - Ativar passo-a-passo
+      - Iniciar cozinha
+      - Começar a cozinhar
+      - Quero fazer essa receita
+      - Vou fazer essa
+      - Fazer essa receita
+      - Quero cozinhar essa
+      - Vamos fazer essa
+      - Ok, quero fazer essa receita
+      - Esta parece boa, vou fazer
+      - Gostei, vou fazer
+      - Essa é a boa
+      - Essa mesmo
+      - Vou tentar essa
+      - Fazer esta
+      - Quero esta
+
+  # NOVO: Confirmar que tem ingredientes (REMOVIDO "Sim" para evitar conflito)
+  - intent: has_ingredients_confirm
+    examples: |
+      - Sim, vamos lá
+      - Tenho todos os ingredientes
+      - Sim, tenho tudo
+      - Vamos começar
+      - Tenho tudo pronto
+      - Tudo preparado
+      - Ingredientes prontos
+      - Pode começar
+      - Vamos lá
+
+  # NOVO: Ver ingredientes primeiro
+  - intent: show_ingredients_first
+    examples: |
+      - Mostrar ingredientes primeiro
+      - Quero ver os ingredientes
+      - Mostra os ingredientes
+      - Ver lista de ingredientes
+      - Lista de ingredientes
+      - Que ingredientes preciso
+      - Preciso ver os ingredientes
+
+  # NOVO: Navegar passos
+  - intent: next_step
+    examples: |
+      - Próximo
+      - Próximo passo
+      - Avançar
+      - Continuar
+      - Seguinte
+      - Vai
+      - Passo seguinte
+
+  - intent: previous_step
+    examples: |
+      - Voltar
+      - Passo anterior
+      - Anterior
+      - Retroceder
+      - Volta atrás
+
+  - intent: repeat_step
+    examples: |
+      - Repetir
+      - Repete
+      - Não percebi
+      - Diz de novo
+      - Outra vez
+      - Repete o passo
+
+  - intent: pause_cooking
+    examples: |
+      - Pausar
+      - Pausa
+      - Parar
+      - Espera
+      - Para aí
+      - Aguarda
+
+  - intent: need_help_step
+    examples: |
+      - Ajuda
+      - Não entendi
+      - Como faço isso?
+      - Explica melhor
+      - Dicas
+      - Preciso de ajuda
+      - Não sei fazer isso
+
+  - regex: number
+    examples: |
+      - \d+

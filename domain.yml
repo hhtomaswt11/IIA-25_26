@@ -1,4 +1,5 @@
 version: "3.1"
+
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
@@ -10,47 +11,76 @@ intents:
   - deny
   - start_discovery
   - ingredient_discovery
+  - select_recipe
+  - start_cooking_mode
+  - has_ingredients_confirm
+  - show_ingredients_first
+  - next_step
+  - previous_step
+  - repeat_step
+  - pause_cooking
+  - need_help_step
+  - nlu_fallback  # ✅ ADICIONADO
 
 actions:
   - action_search_recipes
   - action_search_recipes_by_ingredients
-
-# Slots used in flows
+  - action_show_recipe_details
+  # - action_start_cooking_mode
+  - action_start_cooking_mode  # ✅ Certifica-te que esta action existe
+  - action_show_current_step
+  - action_next_step
+  - action_previous_step
+  - action_complete_recipe
+  - action_set_cooking_confirmation 
+  
 slots:
+  # Slots para descoberta de receitas (MUDADO para text para flexibilidade)
   recipe_category:
-    type: categorical
-    values: [entrada, principal, sobremesa]
-    mappings: [{type: from_llm}]
+    type: text  # ✅ MUDADO de categorical para text
+    mappings:
+      - type: from_llm
+
   cook_time:
     type: text
-    mappings: [{type: from_llm}]
+    mappings:
+      - type: from_llm
+
   difficulty:
-    type: categorical
-    values: [facil, medio, dificil, qualquer]
-    mappings: [{type: from_llm}]
+    type: text  # ✅ MUDADO de categorical para text
+    mappings:
+      - type: from_llm
+
   dietary_restrictions:
-    type: categorical
-    values: [nenhuma, vegetariano, vegano, sem_gluten, outro]
-    mappings: [{type: from_llm}]
+    type: text  # ✅ MUDADO de categorical para text
+    mappings:
+      - type: from_llm
+
   avoid_ingredients:
     type: text
-    mappings: [{type: from_llm}]
+    mappings:
+      - type: from_llm
+
   caloric_preference:
-    type: categorical
-    values: [leve, moderado, sem_restricao]
-    mappings: [{type: from_llm}]
+    type: text  # ✅ MUDADO de categorical para text
+    mappings:
+      - type: from_llm
+
+  # Slots para resultados
   search_results:
     type: any
     influence_conversation: false
-    mappings: [{type: controlled}]
+    mappings:
+      - type: custom
+
+  # Slots para ingredientes
   available_ingredients:
     type: text
     mappings:
       - type: from_llm
 
   has_more_ingredients:
-    type: categorical
-    values: [sim, nao]
+    type: text  # ✅ MUDADO de categorical para text
     mappings:
       - type: from_llm
 
@@ -59,60 +89,111 @@ slots:
     mappings:
       - type: from_llm
 
-# Responses (utterances) used by the flow and other parts of the bot
+  # Slot para seleção de receita
+  selected_recipe_number:
+    type: any # text 
+    influence_conversation: false
+    mappings:
+      - type: from_llm 
+
+  # Slots para modo de cozinha
+  cooking_choice:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_llm  # ✅ CORRIGIDO de "controlled" para "from_llm"
+
+  cooking_step_intent:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  cooking_confirmation:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  cooking_mode_active:
+    type: bool
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  current_step_number:
+    type: float
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  total_steps:
+    type: float
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  has_ingredients:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_llm
+
 responses:
   utter_greet:
     - text: "Olá! Sou o seu assistente de receitas. No que posso ajudar?"
+
   utter_goodbye:
     - text: "Adeus! Espero ter ajudado a encontrar algo delicioso."
+
   utter_ask_rephrase:
     - text: "Desculpe, não entendi. Pode reformular o que procura?"
 
   utter_ask_recipe_category:
     - text: "Ótimo! Vamos encontrar a receita perfeita para ti. Tens alguma preferência de tipo de prato?"
       buttons:
-        - payload: "Entrada"
-          title: Entrada
-        - payload: "Prato Principal"
-          title: Prato Principal
-        - payload: "Sobremesa"
-          title: Sobremesa
+        - payload: "entrada"
+          title: "Entrada"
+        - payload: "principal"
+          title: "Prato Principal"
+        - payload: "sobremesa"
+          title: "Sobremesa"
 
   utter_ask_cook_time:
     - text: "Quanto tempo tens disponível para cozinhar?"
       buttons:
-        - payload: "Até 30min"
-          title: Até 30min
+        - payload: "até 30min"
+          title: "Até 30min"
         - payload: "30-60min"
-          title: 30-60min
-        - payload: "Mais de 1h"
-          title: Mais de 1h
+          title: "30-60min"
+        - payload: "mais de 1h"
+          title: "Mais de 1h"
 
   utter_ask_difficulty:
     - text: "E que nível de dificuldade procuras?"
       buttons:
-        - payload: "Fácil"
-          title: Fácil
-        - payload: "Médio"
-          title: Médio
-        - payload: "Difícil"
-          title: Difícil
-        - payload: "Qualquer"
-          title: Qualquer
+        - payload: "facil"
+          title: "Fácil"
+        - payload: "medio"
+          title: "Médio"
+        - payload: "dificil"
+          title: "Difícil"
+        - payload: "qualquer"
+          title: "Qualquer"
 
   utter_ask_dietary_restrictions:
     - text: "Tens alguma restrição alimentar ou ingrediente que queiras evitar?"
       buttons:
-        - payload: "Nenhuma"
-          title: Nenhuma
-        - payload: "Vegetariano"
-          title: Vegetariano
-        - payload: "Vegano"
-          title: Vegano
-        - payload: "Sem Glúten"
-          title: Sem Glúten
-        - payload: "Outro"
-          title: Outro
+        - payload: "nenhuma"
+          title: "Nenhuma"
+        - payload: "vegetariano"
+          title: "Vegetariano"
+        - payload: "vegano"
+          title: "Vegano"
+        - payload: "sem_gluten"
+          title: "Sem Glúten"
+        - payload: "outro"
+          title: "Outro"
 
   utter_ask_avoid_ingredients:
     - text: "Certo. Por favor, diz-me que ingredientes específicos queres evitar (Ex: ovo, leite, amendoim)."
@@ -120,22 +201,19 @@ responses:
   utter_ask_caloric_preference:
     - text: "Queres uma opção mais leve ou não te importas com as calorias?"
       buttons:
-        - payload: "Leve"
-          title: Leve (até 300 cal)
-        - payload: "Moderado"
-          title: Moderado (300-600 cal)
-        - payload: "Sem restrição"
-          title: Sem restrição
-
-  utter_results_summary:
-    - text: "Encontrei {num_results} receitas perfeitas para ti! 🍳 {results_text} Qual te interessa?"
+        - payload: "leve"
+          title: "Leve (até 300 cal)"
+        - payload: "moderado"
+          title: "Moderado (300-600 cal)"
+        - payload: "sem_restricao"
+          title: "Sem restrição"
 
   utter_default_fallback:
     - text: "Desculpe, não entendi o que procura. Pode reformular a sua pergunta?"
 
   utter_cannot_handle:
     - text: "Desculpe, não estou treinado para isso. Pode reformular ou perguntar outra coisa sobre receitas?"
-  
+
   utter_ask_available_ingredients:
     - text: "Que ingredientes tens neste momento em casa? Podes listar, por exemplo: frango, batata, cenoura."
 
@@ -143,12 +221,64 @@ responses:
     - text: "Tens mais algum ingrediente que queiras usar?"
       buttons:
         - title: "Sim"
-          payload: "Sim"
+          payload: "sim"
         - title: "Não, só esses"
-          payload: "Não, só esses"
+          payload: "nao"
 
   utter_ask_additional_ingredients:
     - text: "Perfeito! Diz-me então que outros ingredientes tens (por exemplo: alho, azeite, limão)."
 
   utter_ingredient_results:
     - text: "{results_text}"
+
+  utter_ask_selected_recipe_number:
+    - text: "Queres ver alguma receita em específico? (ex: 'receita 1', '2', 'a terceira')"
+
+  utter_ask_cooking_choice:
+    - text: "O que queres fazer agora?"
+      buttons:
+        - payload: "começar"
+          title: "Começar a cozinhar"
+        - payload: "ver_outra"
+          title: "Ver outra receita"
+        - payload: "cancelar"
+          title: "Cancelar"
+
+  utter_ask_cooking_step_intent:
+    - text: "O que queres fazer agora?"
+      buttons:
+        - payload: "proximo"
+          title: "Próximo passo"
+        - payload: "anterior"
+          title: "Anterior"
+        - payload: "ajuda"
+          title: "Ajuda"
+
+  utter_ask_has_ingredients:
+    - text: "Ótimo! Vamos começar. Tens todos os ingredientes?"
+      buttons:
+        - title: "Sim, vamos lá!"
+          payload: "/has_ingredients_confirm"
+        - title: "Mostrar ingredientes primeiro"
+          payload: "/show_ingredients_first"
+
+  utter_ask_cooking_confirmation:
+    - text: "Tens todos os ingredientes para esta receita?"
+      buttons:
+        - title: "Sim, vamos lá!"
+          payload: "/has_ingredients_confirm"
+        - title: "Mostrar ingredientes primeiro"
+          payload: "/show_ingredients_first"
+
+  utter_cooking_paused:
+    - text: "Cozinha pausada! Quando quiseres continuar, diz 'continuar' ou 'próximo passo'."
+
+  utter_cooking_completed:
+    - text: "Terminaste a receita! Como correu?"
+      buttons:
+        - title: "⭐⭐⭐⭐⭐"
+          payload: "5 estrelas"
+        - title: "⭐⭐⭐⭐"
+          payload: "4 estrelas"
+        - title: "⭐⭐⭐"
+          payload: "3 estrelas"

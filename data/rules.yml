@@ -1,17 +1,74 @@
 version: "3.1"
 
 rules:
-  - rule: Start recipe discovery
+  # Cumprimentos
+  - rule: Greet user
     steps:
-      - intent: start_discovery
-      - action: action_search_recipes
+      - intent: greet
+      - action: utter_greet
 
-  - rule: Start recipe discovery
+  - rule: Say goodbye
     steps:
-      - intent: ingredient_discovery
-      - action: action_search_recipes_by_ingredients
+      - intent: goodbye
+      - action: utter_goodbye
 
-  - rule: Fallback - Responder em Português
+  # Modo de cozinha - navegação de passos
+  - rule: Go to next step
+    condition:
+      - slot_was_set:
+          - cooking_mode_active: true
+    steps:
+      - intent: next_step
+      - action: action_next_step
+      - action: action_show_current_step
+
+  - rule: Go to previous step
+    condition:
+      - slot_was_set:
+          - cooking_mode_active: true
+    steps:
+      - intent: previous_step
+      - action: action_previous_step
+      - action: action_show_current_step
+
+  - rule: Repeat current step
+    condition:
+      - slot_was_set:
+          - cooking_mode_active: true
+    steps:
+      - intent: repeat_step
+      - action: action_show_current_step
+
+  - rule: Pause cooking mode
+    condition:
+      - slot_was_set:
+          - cooking_mode_active: true
+    steps:
+      - intent: pause_cooking
+      - action: utter_cooking_paused
+
+  - rule: Help with current step
+    condition:
+      - slot_was_set:
+          - cooking_mode_active: true
+    steps:
+      - intent: need_help_step
+      - action: action_show_current_step
+
+  # Fallback
+  - rule: Handle fallback
     steps:
       - intent: nlu_fallback
       - action: utter_default_fallback
+
+responses:
+  utter_greet:
+    - text: "Olá! 👋 Sou o teu assistente de cozinha. Como te posso ajudar hoje?"
+      buttons:
+        - title: "🔍 Encontrar receita"
+          payload: "/start_discovery"
+        - title: "🥘 Receita por ingredientes"
+          payload: "/ingredient_discovery"
+
+  utter_goodbye:
+    - text: "Até breve! Boas cozinhadas! 👨‍🍳✨"
