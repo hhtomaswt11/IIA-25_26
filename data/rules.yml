@@ -1,74 +1,87 @@
 version: "3.1"
 
 rules:
-  # Cumprimentos
-  - rule: Greet user
-    steps:
-      - intent: greet
-      - action: utter_greet
 
-  - rule: Say goodbye
+  - rule: Start recipe discovery
     steps:
-      - intent: goodbye
-      - action: utter_goodbye
+      - intent: start_discovery
+      - action: action_search_recipes
 
-  # Modo de cozinha - navegação de passos
+  - rule: Start recipe discovery
+    steps:
+      - intent: ingredient_discovery
+      - action: action_search_recipes_by_ingredients
+
+  - rule: Show recipe details 
+    steps:
+      - intent: select_recipe 
+      - action: action_show_recipe_details 
+ 
+  # ==========================
+  # COOKING MODE RULES
+  # ==========================
+
+  # Confirm ingredients and start cooking
+  - rule: Confirm ingredients and begin cooking steps
+    steps:
+      - intent: has_ingredients_confirm
+      - action: action_next_step
+      - action: action_show_current_step
+
+  # Show ingredients before cooking
+  - rule: Show ingredients before starting cooking
+    steps:
+      - intent: show_ingredients_first
+      - action: action_show_recipe_details
+
+  # Next step
   - rule: Go to next step
-    condition:
-      - slot_was_set:
-          - cooking_mode_active: true
     steps:
       - intent: next_step
       - action: action_next_step
       - action: action_show_current_step
 
+  # Previous step
   - rule: Go to previous step
-    condition:
-      - slot_was_set:
-          - cooking_mode_active: true
     steps:
       - intent: previous_step
       - action: action_previous_step
       - action: action_show_current_step
 
+  # Repeat current step
   - rule: Repeat current step
-    condition:
-      - slot_was_set:
-          - cooking_mode_active: true
     steps:
       - intent: repeat_step
       - action: action_show_current_step
 
+  # Pause cooking
   - rule: Pause cooking mode
-    condition:
-      - slot_was_set:
-          - cooking_mode_active: true
     steps:
       - intent: pause_cooking
       - action: utter_cooking_paused
 
+  # Need help with current step
   - rule: Help with current step
-    condition:
-      - slot_was_set:
-          - cooking_mode_active: true
     steps:
       - intent: need_help_step
       - action: action_show_current_step
 
-  # Fallback
-  - rule: Handle fallback
+
+  # ==========================
+  # COOKING CONFIRMATION CHOICE
+  # (comes from the cooking_confirmation_flow)
+  # ==========================
+
+  - rule: User chooses to start cooking
+    steps:
+      - intent: start_cooking_mode
+      - action: action_start_cooking_mode
+
+  # ==========================
+  # FALLBACK
+  # ==========================
+
+  - rule: fallback pt
     steps:
       - intent: nlu_fallback
       - action: utter_default_fallback
-
-responses:
-  utter_greet:
-    - text: "Olá! 👋 Sou o teu assistente de cozinha. Como te posso ajudar hoje?"
-      buttons:
-        - title: "🔍 Encontrar receita"
-          payload: "/start_discovery"
-        - title: "🥘 Receita por ingredientes"
-          payload: "/ingredient_discovery"
-
-  utter_goodbye:
-    - text: "Até breve! Boas cozinhadas! 👨‍🍳✨"

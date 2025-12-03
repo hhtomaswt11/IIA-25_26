@@ -101,7 +101,16 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_llm  # ✅ CORRIGIDO de "controlled" para "from_llm"
+      - type: from_llm  
+
+
+  show_cooking_step: # EU 
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_llm  
+  
+
 
   cooking_step_intent:
     type: text
@@ -282,3 +291,15 @@ responses:
           payload: "4 estrelas"
         - title: "⭐⭐⭐"
           payload: "3 estrelas"
+
+  utter_show_cooking_step:
+    - text: "{step_message}"
+      buttons:
+       - payload: "proximo" # next_step 
+         title: "Próximo passo"
+       - payload: "repetir"
+         title: "Repetir"
+       - payload: "ajuda"
+         title: "Ajuda"
+       - payload: "voltar"
+         title: "Voltar"

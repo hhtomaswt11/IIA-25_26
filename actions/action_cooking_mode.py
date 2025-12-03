@@ -196,19 +196,24 @@ class ActionShowCurrentStep(Action):
         
         # Botão Próximo Passo
         if current_step_int < total_steps_int:
-             buttons.append({"title": "Próximo Passo", "payload": "/next_step"})
+             buttons.append({"title": "Próximo Passo", "payload": "proximo"})
         else:
              buttons.append({"title": "Terminar Receita", "payload": "/complete_recipe"})
 
         # Botão Voltar
         if current_step_int > 1:
-            buttons.append({"title": "Voltar", "payload": "/previous_step"})
+            buttons.append({"title": "Voltar", "payload": "voltar"})
         
         # Botões extra
-        buttons.append({"title": "Repetir", "payload": "/repeat_step"})
-        buttons.append({"title": "Ajuda", "payload": "/need_help_step"})
+        buttons.append({"title": "Repetir", "payload": "repetir"})
+        buttons.append({"title": "Ajuda", "payload": "ajuda"})
 
-        dispatcher.utter_message(text=message, buttons=buttons)
+        #dispatcher.utter_message(text=message, buttons=buttons)
+        dispatcher.utter_message(
+        response="utter_show_cooking_step",
+        step_message=message
+        )
+
 
         return []
 
