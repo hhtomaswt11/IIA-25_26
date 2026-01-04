@@ -1,0 +1,217 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - olá
+    - oi
+    - bom dia
+    - boa tarde
+    - boa noite
+    - hey
+    - ola
+    - e aí
+    - tudo bem?
+    - olá bot
+
+- intent: goodbye
+  examples: |
+    - tchau
+    - adeus
+    - até logo
+    - até mais
+    - bye
+    - vou indo
+    - obrigado e tchau
+    - até à próxima
+    - até depois
+
+- intent: quero_cozinhar
+  examples: |
+    - quero cozinhar algo
+    - quero fazer comida
+    - quero uma receita
+    - preciso de uma receita
+    - ajuda-me a cozinhar
+    - o que posso cozinhar
+    - quero preparar algo
+    - tenho fome
+    - vou cozinhar
+    - quero fazer um prato
+    - dá-me uma receita
+    - sugere uma receita
+    - quero fazer jantar
+    - quero fazer almoço
+
+- intent: escolher_categoria
+  examples: |
+    - [entrada](categoria)
+    - quero uma [entrada](categoria)
+    - [prato principal](categoria)
+    - [sobremesa](categoria)
+    - quero fazer uma [sobremesa](categoria)
+    - [lanche](categoria)
+    - um [lanche](categoria) rápido
+    - [tudo](categoria)
+    - tanto faz a categoria
+    - qualquer [prato principal](categoria)
+    - uma [entrada](categoria) leve
+
+- intent: escolher_tempo
+  examples: |
+    - [até 30 minutos](tempo)
+    - [menos de 30 minutos](tempo:ate_30min)
+    - [30 a 60 minutos](tempo:30_60min)
+    - [entre 30 e 60 minutos](tempo:30_60min)
+    - [mais de 1 hora](tempo:mais_1h)
+    - [mais de uma hora](tempo:mais_1h)
+    - [tanto faz](tempo:tanto_faz)
+    - não importa o tempo
+    - tenho [pouco tempo](tempo:ate_30min)
+    - tenho [tempo](tempo:tanto_faz)
+    - algo [rápido](tempo:ate_30min)
+    - [30min](tempo:ate_30min)
+    - [1 hora](tempo:30_60min)
+
+- intent: escolher_dificuldade
+  examples: |
+    - [fácil](dificuldade)
+    - algo [fácil](dificuldade)
+    - [médio](dificuldade)
+    - dificuldade [média](dificuldade:medio)
+    - [difícil](dificuldade)
+    - algo [difícil](dificuldade)
+    - [qualquer](dificuldade)
+    - tanto faz a dificuldade
+    - não importa
+    - sou [iniciante](dificuldade:facil)
+    - sou [experiente](dificuldade:dificil)
+    - nivel [medio](dificuldade)
+
+- intent: escolher_restricoes
+  examples: |
+    - [vegetariano](restricao)
+    - sou [vegetariano](restricao)
+    - [vegano](restricao)
+    - [sem glúten](restricao:sem_gluten)
+    - [sem lactose](restricao:sem_lactose)
+    - [nenhuma](restricao)
+    - não tenho restrições
+    - sem restrições
+    - como de tudo
+    - tenho intolerância a [lactose](restricao:sem_lactose)
+    - alergia ao [glúten](restricao:sem_gluten)
+    - não como carne, [vegetariano](restricao)
+
+- intent: informar_ingrediente_evitar
+  examples: |
+    - não gosto de [ovo](ingrediente)
+    - sem [leite](ingrediente)
+    - evita [cebola](ingrediente)
+    - não quero [tomate](ingrediente)
+    - alergia a [amendoim](ingrediente)
+    - não posso comer [frutos do mar](ingrediente)
+    - sem [peixe](ingrediente)
+    - não gosto de [cogumelos](ingrediente)
+    - evitar [queijo](ingrediente)
+    - sem [manteiga](ingrediente)
+
+- intent: escolher_calorias
+  examples: |
+    - [leve](preferencia_calorica)
+    - algo [leve](preferencia_calorica)
+    - [até 300 calorias](preferencia_calorica:leve)
+    - [moderado](preferencia_calorica)
+    - [300 a 600 calorias](preferencia_calorica:moderado)
+    - [sem restrição](preferencia_calorica:sem_restricao)
+    - não importa as calorias
+    - tanto faz
+    - poucas calorias
+    - low calorie
+    - dieta
+
+- intent: ver_receita
+  examples: |
+    - ver receita 1
+    - mostrar receita 2
+    - quero ver a primeira
+    - a segunda receita
+    - receita número 3
+    - ver a receita [1](numero_receita)
+    - mostrar [2](numero_receita)
+    - detalhes da receita [3](numero_receita)
+    
+
+- intent: nova_busca
+  examples: |
+    - nova busca
+    - procurar outra
+    - quero outra receita
+    - começa de novo
+    - recomeçar
+    - voltar ao início
+    - outra pesquisa
+    - buscar novamente
+    - não gostei dessas
+
+- intent: voltar
+  examples: |
+    - voltar
+    - volta
+    - anterior
+    - retroceder
+    - voltar atrás
+
+- intent: affirm
+  examples: |
+    - sim
+    - yes
+    - claro
+    - correto
+    - exato
+    - isso mesmo
+    - confirmo
+    - ok
+    - está bem
+    - perfeito
+
+- intent: deny
+  examples: |
+    - não
+    - no
+    - nope
+    - negativo
+    - não quero
+    - nem pensar
+    - de jeito nenhum
+
+- intent: ajuda
+  examples: |
+    - ajuda
+    - help
+    - como funciona
+    - o que podes fazer
+    - explica-me
+    - não percebo
+    - o que faço
+
+- intent: bot_challenge
+  examples: |
+    - és um bot?
+    - és humano?
+    - estou a falar com um bot?
+    - és um robô?
+    - és real?
+
+- intent: informar_ingredientes_disponiveis
+  examples: |
+    - tenho [batata](ingrediente_possuido) e [ovos](ingrediente_possuido)
+    - tenho [frango](ingrediente_possuido), [arroz](ingrediente_possuido) e [natas](ingrediente_possuido)
+    - o que posso fazer com [atum](ingrediente_possuido)?
+    - so tenho [cebola](ingrediente_possuido) e [tomate](ingrediente_possuido)
+    - tenho [bacalhau](ingrediente_possuido)
+    - receitas com [chocolate](ingrediente_possuido)
+    - tenho [leite condensado](ingrediente_possuido) e [bolacha](ingrediente_possuido)
+    - [abacate](ingrediente_possuido)
+    - [massa](ingrediente_possuido) e [natas](ingrediente_possuido)
+  

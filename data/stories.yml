@@ -1,0 +1,292 @@
+version: "3.1"
+
+stories:
+
+- story: descoberta completa de receita - caminho feliz
+  steps:
+    - intent: greet
+    - action: utter_greet
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: prato_principal
+    - slot_was_set:
+        - categoria: prato_principal
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+      entities:
+        - tempo: ate_30min
+    - slot_was_set:
+        - tempo: ate_30min
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+      entities:
+        - dificuldade: facil
+    - slot_was_set:
+        - dificuldade: facil
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+      entities:
+        - restricao: nenhuma
+    - slot_was_set:
+        - restricao: nenhuma
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+      entities:
+        - preferencia_calorica: leve
+    - slot_was_set:
+        - preferencia_calorica: leve
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+    - intent: ver_receita
+      entities:
+        - numero_receita: "1"
+    - action: action_mostrar_receita_completa
+    - intent: goodbye
+    - action: utter_goodbye
+
+- story: descoberta com restricao vegetariana
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: sobremesa
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+      entities:
+        - tempo: 30_60min
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+      entities:
+        - dificuldade: medio
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+      entities:
+        - restricao: vegetariano
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+      entities:
+        - preferencia_calorica: moderado
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: descoberta com ingrediente especifico para evitar
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+      entities:
+        - restricao: outro
+    - slot_was_set:
+        - restricao: outro
+    - action: utter_perguntar_ingrediente_especifico
+    - intent: informar_ingrediente_evitar
+      entities:
+        - ingrediente: ovo
+    - slot_was_set:
+        - ingrediente_evitar: ovo
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: usuario pede nova busca apos ver receitas
+  steps:
+    - action: action_mostrar_receitas
+    - intent: nova_busca
+    - action: action_reset_slots
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+
+- story: usuario vê receita e depois pede nova busca
+  steps:
+    - action: action_mostrar_receita_completa
+    - intent: nova_busca
+    - action: action_reset_slots
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+
+- story: usuario vê receita e depois volta para lista
+  steps:
+    - action: action_mostrar_receita_completa
+    - intent: voltar
+    - action: action_mostrar_receitas
+
+- story: inicio direto sem cumprimento
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+
+- story: usuario pede ajuda
+  steps:
+    - intent: ajuda
+    - action: utter_ajuda
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+
+- story: usuario pergunta se é bot
+  steps:
+    - intent: bot_challenge
+    - action: utter_iamabot
+
+- story: usuario escolhe lanche rapido e facil
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: lanche
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+      entities:
+        - tempo: ate_30min
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+      entities:
+        - dificuldade: facil
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: usuario escolhe entrada vegana
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: entrada
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+      entities:
+        - restricao: vegano
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: fluxo com despedida a meio
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+    - action: utter_perguntar_tempo
+    - intent: goodbye
+    - action: utter_goodbye
+
+- story: ver diferentes receitas da lista
+  steps:
+    - action: action_mostrar_receitas
+    - intent: ver_receita
+      entities:
+        - numero_receita: "1"
+    - action: action_mostrar_receita_completa
+    - intent: voltar
+    - action: action_mostrar_receitas
+    - intent: ver_receita
+      entities:
+        - numero_receita: "2"
+    - action: action_mostrar_receita_completa
+
+- story: usuario escolhe prato principal dificil com tempo
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: prato_principal
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+      entities:
+        - tempo: mais_1h
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+      entities:
+        - dificuldade: dificil
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+      entities:
+        - restricao: nenhuma
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+      entities:
+        - preferencia_calorica: sem_restricao
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: usuario escolhe sobremesa sem gluten
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: sobremesa
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+      entities:
+        - tempo: ate_30min
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+      entities:
+        - dificuldade: facil
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+      entities:
+        - restricao: sem_gluten
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+      entities:
+        - preferencia_calorica: leve
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: busca por ingredientes do frigorifico
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria # O bot pergunta categoria, mas o user responde com ingredientes
+    - intent: informar_ingredientes_disponiveis
+      entities:
+        - ingrediente_possuido: batata
+        - ingrediente_possuido: ovos
+    - action: action_buscar_por_ingredientes
+    - action: action_mostrar_receitas
+
+- story: utilizador diz ingredientes diretamente
+  steps:
+    - intent: informar_ingredientes_disponiveis
+      entities:
+        - ingrediente_possuido: atum
+    - action: action_buscar_por_ingredientes
+    - action: action_mostrar_receitas

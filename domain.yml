@@ -1,0 +1,224 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - quero_cozinhar
+  - escolher_categoria
+  - escolher_tempo
+  - escolher_dificuldade
+  - escolher_restricoes
+  - informar_ingrediente_evitar
+  - escolher_calorias
+  - ver_receita
+  - nova_busca
+  - voltar
+  - ajuda
+  - bot_challenge
+  - informar_ingredientes_disponiveis
+
+entities:
+  - categoria
+  - tempo
+  - dificuldade
+  - restricao
+  - ingrediente
+  - preferencia_calorica
+  - numero_receita
+  - ingrediente_possuido
+
+slots:
+
+  lista_ingredientes_possuido:
+    type: list
+    mappings:
+      - type: from_entity
+        entity: ingrediente_possuido
+  categoria:
+    type: categorical
+    values:
+      - entrada
+      - prato_principal
+      - sobremesa
+      - tudo
+    mappings:
+      - type: from_entity
+        entity: categoria
+  
+  tempo:
+    type: categorical
+    values:
+      - ate_30min
+      - 30_60min
+      - mais_1h
+      - tanto_faz
+    mappings:
+      - type: from_entity
+        entity: tempo
+  
+  dificuldade:
+    type: categorical
+    values:
+      - facil
+      - medio
+      - dificil
+      - qualquer
+    mappings:
+      - type: from_entity
+        entity: dificuldade
+  
+  restricao:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: restricao
+  
+  ingrediente_evitar:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: ingrediente
+  
+  preferencia_calorica:
+    type: categorical
+    values:
+      - leve
+      - moderado
+      - sem_restricao
+    mappings:
+      - type: from_entity
+        entity: preferencia_calorica
+  
+  receitas_encontradas:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+  
+  receita_selecionada:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+  
+  numero_receita:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: numero_receita
+
+responses:
+  utter_greet:
+    - text: "Olá! Bem-vindo ao Assistente de Receitas! 👨‍🍳"
+    - text: "Olá! Pronto para cozinhar algo delicioso? 🍳"
+  
+  utter_goodbye:
+    - text: "Até logo! Bom apetite! 😋"
+    - text: "Tchau! Espero que a receita corra bem! 👋"
+  
+  utter_inicio_descoberta:
+    - text: "Ótimo! Vamos encontrar a receita perfeita para ti. Vou fazer algumas perguntas rápidas."
+  
+  utter_perguntar_categoria:
+    - text: "Que tipo de prato queres fazer?"
+      buttons:
+        - title: "🥗 Entrada"
+          payload: '/escolher_categoria{{"categoria":"entrada"}}'
+        - title: "🍝 Prato Principal"
+          payload: '/escolher_categoria{{"categoria":"prato_principal"}}'
+        - title: "🍰 Sobremesa"
+          payload: '/escolher_categoria{{"categoria":"sobremesa"}}'
+        - title: "🎲 Tanto faz"
+          payload: '/escolher_categoria{{"categoria":"tudo"}}'
+  
+  utter_perguntar_tempo:
+    - text: "Quanto tempo tens disponível?"
+      buttons:
+        - title: "⚡ Até 30min"
+          payload: '/escolher_tempo{{"tempo":"ate_30min"}}'
+        - title: "⏰ 30-60min"
+          payload: '/escolher_tempo{{"tempo":"30_60min"}}'
+        - title: "🕐 Mais de 1h"
+          payload: '/escolher_tempo{{"tempo":"mais_1h"}}'
+        - title: "🤷 Tanto faz"
+          payload: '/escolher_tempo{{"tempo":"tanto_faz"}}'
+  
+  utter_perguntar_dificuldade:
+    - text: "Qual o nível de dificuldade que procuras?"
+      buttons:
+        - title: "😊 Fácil"
+          payload: '/escolher_dificuldade{{"dificuldade":"facil"}}'
+        - title: "🤔 Médio"
+          payload: '/escolher_dificuldade{{"dificuldade":"medio"}}'
+        - title: "😤 Difícil"
+          payload: '/escolher_dificuldade{{"dificuldade":"dificil"}}'
+        - title: "🎯 Qualquer"
+          payload: '/escolher_dificuldade{{"dificuldade":"qualquer"}}'
+  
+  utter_perguntar_restricoes:
+    - text: "Tens alguma restrição alimentar ou ingrediente que queiras evitar?"
+      buttons:
+        - title: "🥬 Vegetariano"
+          payload: '/escolher_restricoes{{"restricao":"vegetariano"}}'
+        - title: "🌱 Vegano"
+          payload: '/escolher_restricoes{{"restricao":"vegano"}}'
+        - title: "🌾 Sem Glúten"
+          payload: '/escolher_restricoes{{"restricao":"sem_gluten"}}'
+        - title: "🥛 Sem Lactose"
+          payload: '/escolher_restricoes{{"restricao":"sem_lactose"}}'
+        - title: "✅ Nenhuma"
+          payload: '/escolher_restricoes{{"restricao":"nenhuma"}}'
+        - title: "✏️ Outro"
+          payload: '/escolher_restricoes{{"restricao":"outro"}}'
+  
+  utter_perguntar_ingrediente_especifico:
+    - text: "Diz-me que ingrediente queres evitar (por exemplo: ovo, leite, cebola)"
+  
+  utter_perguntar_calorias:
+    - text: "Queres uma opção mais leve ou não te importas com as calorias?"
+      buttons:
+        - title: "🥗 Leve (até 300 cal)"
+          payload: '/escolher_calorias{{"preferencia_calorica":"leve"}}'
+        - title: "🍽️ Moderado (300-600)"
+          payload: '/escolher_calorias{{"preferencia_calorica":"moderado"}}'
+        - title: "🍕 Sem restrição"
+          payload: '/escolher_calorias{{"preferencia_calorica":"sem_restricao"}}'
+  
+  utter_procurando_receitas:
+    - text: "A procurar as melhores receitas para ti... 🔍"
+  
+  utter_perguntar_qual_receita:
+    - text: "Qual receita te interessa?"
+  
+  utter_nenhuma_receita_encontrada:
+    - text: "Desculpa, não encontrei receitas com esses critérios. Queres tentar com filtros diferentes?"
+      buttons:
+        - title: "🔄 Nova busca"
+          payload: '/nova_busca'
+        - title: "❌ Sair"
+          payload: '/goodbye'
+  
+  utter_ajuda:
+    - text: "Posso ajudar-te a encontrar receitas! Basta dizeres 'quero cozinhar algo' e vou guiar-te através de algumas perguntas para encontrar a receita perfeita. 😊"
+  
+  utter_iamabot:
+    - text: "Sou um assistente virtual de receitas criado para te ajudar a cozinhar! 🤖👨‍🍳"
+  
+  utter_default:
+    - text: "Desculpa, não percebi. Podes reformular?"
+    - text: "Não entendi bem. Podes dizer de outra forma?"
+  utter_perguntar_ingredientes:
+    - text: "Diz-me, que ingredientes tens aí em casa? (Ex: tenho batata, ovos e cebola)"
+
+actions:
+  - action_buscar_receitas
+  - action_mostrar_receitas
+  - action_mostrar_receita_completa
+  - action_reset_slots
+  - action_buscar_por_ingredientes
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: false
