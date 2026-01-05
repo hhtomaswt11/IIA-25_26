@@ -29,7 +29,7 @@ rules:
     - intent: ver_receita
     - action: action_mostrar_receita_completa
 
-- rule: Voltar à lista
+- rule: Voltar à lista (genérico)
   steps:
     - intent: voltar
     - action: action_mostrar_receitas
@@ -45,7 +45,6 @@ rules:
   steps:
     - intent: nlu_fallback
     - action: utter_default
-
 
 - rule: Começar modo a passo
   steps:
@@ -72,14 +71,10 @@ rules:
     - intent: abandonar_receita
     - action: action_abandonar_receita
 
-
 - rule: Regressar passo
   steps:
     - intent: regressar_passo
     - action: action_regressar_passo
-
-
-
 
 - rule: Depois de mostrar um passo, esperar input
   steps:
@@ -90,9 +85,6 @@ rules:
   steps:
     - action: action_proximo_passo
     - action: action_listen
-
-
-
 
 - rule: Finalizar receita -> perguntar avaliação
   steps:
@@ -119,17 +111,6 @@ rules:
     - intent: favoritar_nao
     - action: utter_ok_sem_favoritos
 
-
-
-
-
-
-
-
-
-
-
-
 - rule: Depois de perguntar avaliação, esperar input
   steps:
     - action: action_perguntar_avaliacao
@@ -145,8 +126,6 @@ rules:
     - action: action_guardar_favoritos_csv
     - action: action_listen
 
-
-
 - rule: Remover dos favoritos sim
   steps:
     - intent: remover_sim
@@ -156,8 +135,6 @@ rules:
   steps:
     - intent: remover_nao
     - action: utter_ok_sem_favoritos
-
-
 
 - rule: Listar recentes
   steps:
@@ -184,9 +161,13 @@ rules:
     - intent: favoritos_por_categoria
     - action: action_mostrar_favoritos_por_categoria
 
-
-
 - rule: Favoritos filtrar por categoria
   steps:
     - intent: favoritos_filtrar_categoria
     - action: action_mostrar_favoritos_filtrados_por_categoria
+
+- rule: Recentes filtrar por categoria
+  steps:
+    - intent: recentes_filtrar_categoria
+    - action: action_mostrar_recentes_filtrados_por_categoria
+

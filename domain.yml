@@ -47,6 +47,7 @@ intents:
   - favoritos_por_categoria
 
   - favoritos_filtrar_categoria
+  - recentes_filtrar_categoria
 
 
 entities:
@@ -308,6 +309,9 @@ actions:
   - action_mostrar_favoritos_lista
   - action_mostrar_favoritos_por_categoria
   - action_mostrar_favoritos_filtrados_por_categoria
+
+
+  - action_mostrar_recentes_filtrados_por_categoria
 
 session_config:
   session_expiration_time: 60

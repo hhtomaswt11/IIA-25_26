@@ -346,17 +346,7 @@ nlu:
     - mostra as minhas ultimas receitas feitas 
 
 
-- intent: recentes_ver_todas
-  examples: |
-    - ver todas
-    - mostra todas
-    - listar todas as recentes
 
-- intent: recentes_por_categoria
-  examples: |
-    - por categoria
-    - recentes por categoria
-    - agrupar por categoria
 
 - intent: listar_favoritos
   examples: |
@@ -365,15 +355,14 @@ nlu:
     - receitas guardadas nos favoritos
     - favoritos
 
-- intent: favoritos_por_categoria
-  examples: |
-    - favoritos por categoria
-    - agrupar favoritos por categoria
-    - por categoria
 
-- intent: favoritos_filtrar_categoria
+
+
+
+- intent: recentes_filtrar_categoria
   examples: |
-    - favoritos de [entrada](categoria)
-    - mostra favoritos de [sobremesa](categoria)
-    - favoritos de [prato_principal](categoria)
-    - filtrar favoritos por [entrada](categoria)
+    - recentes de [entrada](categoria)
+    - mostra recentes de [sobremesa](categoria)
+    - recentes de [prato_principal](categoria)
+    - filtrar recentes por [entrada](categoria)
+

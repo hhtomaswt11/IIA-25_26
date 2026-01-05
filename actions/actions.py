@@ -770,17 +770,6 @@ class ActionRemoverFavoritosCSV(Action):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 def _ler_csv_dicts(caminho: str) -> List[Dict[str, Any]]:
     if not os.path.exists(caminho):
         return []
@@ -839,6 +828,9 @@ class ActionMostrarRecentesResumo(Action):
         return []
 
 
+
+
+
 class ActionMostrarRecentesTodas(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_todas"
@@ -846,23 +838,70 @@ class ActionMostrarRecentesTodas(Action):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]):
         rows = _ler_csv_dicts("recentes.csv")
         if not rows:
-            dispatcher.utter_message(text="Ainda não tenho receitas recentes registadas 🙂")
+            dispatcher.utter_message(
+                text="Ainda não tenho receitas recentes registadas 🙂",
+                buttons=[{"title": "⬅️ Voltar", "payload": "/listar_recentes"}],
+            )
             return []
 
-        # ordenar por data desc
+        # Ordenar por data desc (mais recentes primeiro)
         rows.sort(key=lambda x: (x.get("data_finalizacao", "") or ""), reverse=True)
 
-        msg = f"📋 As tuas receitas mais recentes ({len(rows)}):\n\n"
-        for i, r in enumerate(rows[:10], 1):  # top 10 para não ficar gigante
-            msg += f"{i}. {r.get('titulo','—')} — {r.get('data_finalizacao','')}\n"
+        # Carregar dataset completo para ir buscar detalhes por id
+        todas = carregar_receitas()
+        por_id = {r.get("id", ""): r for r in todas if r.get("id", "")}
 
-        dispatcher.utter_message(
-            text=msg,
-            buttons=[{"title": "⬅️ Voltar", "payload": "/listar_recentes"}],
-        )
-        return []
+        # Converter recentes.csv -> lista de receitas (do dataset)
+        recentes_receitas = []
+        for row in rows:
+            rid = (row.get("id", "") or "").strip()
+            if rid and rid in por_id:
+                recentes_receitas.append(por_id[rid])
 
+        if not recentes_receitas:
+            dispatcher.utter_message(
+                text="Tens receitas recentes registadas, mas não consegui encontrá-las no recipes.csv 😕",
+                buttons=[{"title": "⬅️ Voltar", "payload": "/listar_recentes"}],
+            )
+            return []
 
+        # Limitar a 10 receitas (ajusta se quiseres mais)
+        recentes_receitas = recentes_receitas[:10]
+
+        # ✅ CONSTRUIR MENSAGEM NO FORMATO DOS FAVORITOS
+        msg = f"Tens {len(rows)} receitas feitas recentes:\n\n"
+        buttons = []
+
+        for i, receita in enumerate(recentes_receitas, 1):
+            dificuldade_lower = (receita.get("dificuldade", "") or "").lower()
+            emoji = "🍽️"
+            if "fácil" in dificuldade_lower:
+                emoji = "😊"
+            elif "médio" in dificuldade_lower:
+                emoji = "🤔"
+            elif "difícil" in dificuldade_lower:
+                emoji = "😤"
+
+            msg += f"{i}. {emoji} **{receita.get('titulo', '')}**\n"
+            msg += f"   ⏱️ {receita.get('tempo_total', '')} | 🔥 {receita.get('calorias', 0)} Kcal\n\n"
+
+            buttons.append({
+                "title": f"Ver {i}: {receita.get('titulo','')}",
+                "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
+            })
+
+        # Botões de navegação
+        buttons.append({"title": "⬅️ Voltar", "payload": "/listar_recentes"})
+        buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
+
+        dispatcher.utter_message(text=msg, buttons=buttons)
+
+        # ✅ CRÍTICO: Guardar no slot para /ver_receita funcionar
+        return [SlotSet("receitas_encontradas", recentes_receitas)]
+    
+    
+    
+    
 class ActionMostrarRecentesPorCategoria(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_por_categoria"
@@ -873,20 +912,123 @@ class ActionMostrarRecentesPorCategoria(Action):
             dispatcher.utter_message(text="Ainda não tenho receitas recentes registadas 🙂")
             return []
 
-        counts: Dict[str, int] = {}
-        for r in rows:
-            cat = (r.get("categoria", "") or "sem categoria").strip().lower()
-            counts[cat] = counts.get(cat, 0) + 1
+        # Contagens por categoria (baseadas no CSV)
+        count_entrada = 0
+        count_prato_principal = 0
+        count_sobremesa = 0
 
-        msg = "🗂️ Recentes por categoria:\n\n"
-        for cat, n in sorted(counts.items(), key=lambda x: x[1], reverse=True):
-            msg += f"• {cat}: {n}\n"
+        for r in rows:
+            cat = (r.get("categoria", "") or "").strip().lower()
+            if "entrada" in cat:
+                count_entrada += 1
+            elif "prato principal" in cat or "prato_principal" in cat:
+                count_prato_principal += 1
+            elif "sobremesa" in cat:
+                count_sobremesa += 1
+
+        msg = "🗂️ Recentes por categoria:\n\nEscolhe uma categoria:"
 
         dispatcher.utter_message(
             text=msg,
-            buttons=[{"title": "⬅️ Voltar", "payload": "/listar_recentes"}],
+            buttons=[
+                {"title": f"Entrada ({count_entrada})", "payload": '/recentes_filtrar_categoria{"categoria":"entrada"}'},
+                {"title": f"Prato Principal ({count_prato_principal})", "payload": '/recentes_filtrar_categoria{"categoria":"prato_principal"}'},
+                {"title": f"Sobremesa ({count_sobremesa})", "payload": '/recentes_filtrar_categoria{"categoria":"sobremesa"}'},
+                {"title": "⬅️ Voltar", "payload": "/listar_recentes"},
+            ],
         )
         return []
+
+
+class ActionMostrarRecentesFiltradosPorCategoria(Action):
+    def name(self) -> Text:
+        return "action_mostrar_recentes_filtrados_por_categoria"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]):
+        categoria_slot = (tracker.get_slot("categoria") or "").strip().lower()
+
+        rows = _ler_csv_dicts("recentes.csv")
+        if not rows:
+            dispatcher.utter_message(text="Ainda não tenho receitas recentes registadas 🙂")
+            return []
+
+        # Filtrar por categoria escolhida
+        def match_categoria(cat: str) -> bool:
+            c = (cat or "").strip().lower()
+            if categoria_slot == "entrada":
+                return "entrada" in c
+            if categoria_slot == "prato_principal":
+                return ("prato principal" in c) or ("prato_principal" in c)
+            if categoria_slot == "sobremesa":
+                return "sobremesa" in c
+            return False
+
+        filtradas_rows = [r for r in rows if match_categoria(r.get("categoria", ""))]
+
+        nome_cat = {
+            "entrada": "Entrada",
+            "prato_principal": "Prato Principal",
+            "sobremesa": "Sobremesa",
+        }.get(categoria_slot, "Categoria")
+
+        if not filtradas_rows:
+            dispatcher.utter_message(
+                text=f"Não tens receitas recentes na categoria **{nome_cat}** 🙂",
+                buttons=[{"title": "⬅️ Voltar", "payload": "/recentes_por_categoria"}],
+            )
+            return []
+
+        # ordenar por data desc (mais recentes primeiro)
+        filtradas_rows.sort(key=lambda x: (x.get("data_finalizacao", "") or ""), reverse=True)
+
+        # Carregar receitas completas e mapear por id (para ter tempo/kcal e poder /ver_receita funcionar)
+        todas = carregar_receitas()
+        por_id = {r.get("id", ""): r for r in todas if r.get("id", "")}
+
+        receitas = []
+        for row in filtradas_rows:
+            rid = (row.get("id", "") or "").strip()
+            if rid and rid in por_id:
+                receitas.append(por_id[rid])
+
+        if not receitas:
+            dispatcher.utter_message(
+                text=f"Tens registos recentes em **{nome_cat}**, mas não consegui encontrá-los no recipes.csv 😕",
+                buttons=[{"title": "⬅️ Voltar", "payload": "/recentes_por_categoria"}],
+            )
+            return []
+
+        # Limitar a 5 (como exemplo dos favoritos) — ajusta se quiseres
+        receitas = receitas[:5]
+
+        msg = f"Tens {len(filtradas_rows)} receitas feitas recentes (**{nome_cat}**):\n\n"
+        buttons = []
+
+        for i, receita in enumerate(receitas, 1):
+            dificuldade_lower = (receita.get("dificuldade", "") or "").lower()
+            emoji = "🍽️"
+            if "fácil" in dificuldade_lower:
+                emoji = "😊"
+            elif "médio" in dificuldade_lower:
+                emoji = "🤔"
+            elif "difícil" in dificuldade_lower:
+                emoji = "😤"
+
+            msg += f"{i}. {emoji} **{receita.get('titulo','')}**\n"
+            msg += f"   ⏱️ {receita.get('tempo_total','')} | 🔥 {receita.get('calorias',0)} Kcal\n\n"
+
+            buttons.append({
+                "title": f"Ver {i}: {receita.get('titulo','')}",
+                "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
+            })
+
+        buttons.append({"title": "⬅️ Voltar", "payload": "/recentes_por_categoria"})
+        buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
+
+        dispatcher.utter_message(text=msg, buttons=buttons)
+
+        # ✅ guardar para o /ver_receita continuar a funcionar como sempre
+        return [SlotSet("receitas_encontradas", receitas)]
 
 
 class ActionMostrarFavoritosLista(Action):
