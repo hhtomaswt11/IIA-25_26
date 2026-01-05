@@ -45,3 +45,148 @@ rules:
   steps:
     - intent: nlu_fallback
     - action: utter_default
+
+
+- rule: Começar modo a passo
+  steps:
+    - intent: comecar
+    - action: action_iniciar_modo_passo
+
+- rule: Mostrar ingredientes primeiro
+  steps:
+    - intent: mostrar_ingredientes_primeiro
+    - action: action_mostrar_ingredientes_da_receita
+
+- rule: Confirmar que tem ingredientes e começar passos
+  steps:
+    - intent: confirmar_ingredientes
+    - action: action_mostrar_passo_atual
+
+- rule: Próximo passo
+  steps:
+    - intent: proximo_passo
+    - action: action_proximo_passo
+
+- rule: Abandonar receita
+  steps:
+    - intent: abandonar_receita
+    - action: action_abandonar_receita
+
+
+- rule: Regressar passo
+  steps:
+    - intent: regressar_passo
+    - action: action_regressar_passo
+
+
+
+
+- rule: Depois de mostrar um passo, esperar input
+  steps:
+    - action: action_mostrar_passo_atual
+    - action: action_listen
+
+- rule: Depois de proximo/regressar, esperar input
+  steps:
+    - action: action_proximo_passo
+    - action: action_listen
+
+
+
+
+- rule: Finalizar receita -> perguntar avaliação
+  steps:
+    - intent: finalizar_receita
+    - action: action_perguntar_avaliacao
+
+- rule: Dar avaliação -> registar recente e perguntar favoritos
+  steps:
+    - intent: dar_avaliacao
+    - action: action_registar_recente_e_perguntar_favoritos
+
+- rule: Não avaliar -> registar recente e perguntar favoritos
+  steps:
+    - intent: nao_avaliar
+    - action: action_registar_recente_e_perguntar_favoritos
+
+- rule: Favoritar sim -> guardar favoritos
+  steps:
+    - intent: favoritar_sim
+    - action: action_guardar_favoritos_csv
+
+- rule: Favoritar não -> terminar fluxo
+  steps:
+    - intent: favoritar_nao
+    - action: utter_ok_sem_favoritos
+
+
+
+
+
+
+
+
+
+
+
+
+- rule: Depois de perguntar avaliação, esperar input
+  steps:
+    - action: action_perguntar_avaliacao
+    - action: action_listen
+
+- rule: Depois de registar recente e perguntar favoritos, esperar input
+  steps:
+    - action: action_registar_recente_e_perguntar_favoritos
+    - action: action_listen
+
+- rule: Depois de guardar favoritos, esperar input
+  steps:
+    - action: action_guardar_favoritos_csv
+    - action: action_listen
+
+
+
+- rule: Remover dos favoritos sim
+  steps:
+    - intent: remover_sim
+    - action: action_remover_favoritos_csv
+
+- rule: Remover dos favoritos nao
+  steps:
+    - intent: remover_nao
+    - action: utter_ok_sem_favoritos
+
+
+
+- rule: Listar recentes
+  steps:
+    - intent: listar_recentes
+    - action: action_mostrar_recentes_resumo
+
+- rule: Recentes ver todas
+  steps:
+    - intent: recentes_ver_todas
+    - action: action_mostrar_recentes_todas
+
+- rule: Recentes por categoria
+  steps:
+    - intent: recentes_por_categoria
+    - action: action_mostrar_recentes_por_categoria
+
+- rule: Listar favoritos
+  steps:
+    - intent: listar_favoritos
+    - action: action_mostrar_favoritos_lista
+
+- rule: Favoritos por categoria
+  steps:
+    - intent: favoritos_por_categoria
+    - action: action_mostrar_favoritos_por_categoria
+
+
+
+- rule: Favoritos filtrar por categoria
+  steps:
+    - intent: favoritos_filtrar_categoria
+    - action: action_mostrar_favoritos_filtrados_por_categoria

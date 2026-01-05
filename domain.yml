@@ -19,6 +19,36 @@ intents:
   - bot_challenge
   - informar_ingredientes_disponiveis
 
+  - comecar
+  - confirmar_ingredientes
+  - mostrar_ingredientes_primeiro
+  - proximo_passo
+  - abandonar_receita
+  - avaliar_receita
+  - guardar_favoritos
+
+  - regressar_passo
+  - finalizar_receita
+
+  - dar_avaliacao
+  - nao_avaliar
+  - favoritar_sim
+  - favoritar_nao
+
+  - remover_sim
+  - remover_nao
+
+
+  - listar_recentes
+  - recentes_ver_todas
+  - recentes_por_categoria
+
+  - listar_favoritos
+  - favoritos_por_categoria
+
+  - favoritos_filtrar_categoria
+
+
 entities:
   - categoria
   - tempo
@@ -28,7 +58,8 @@ entities:
   - preferencia_calorica
   - numero_receita
   - ingrediente_possuido
-
+  - avaliacao_utilizador
+  
 slots:
 
   lista_ingredientes_possuido:
@@ -108,6 +139,28 @@ slots:
     mappings:
       - type: from_entity
         entity: numero_receita
+
+  passo_atual:
+    type: float
+    initial_value: 0
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  modo_passo:
+    type: bool
+    initial_value: false
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+
+  avaliacao_utilizador:
+    type: float
+    initial_value: null
+    influence_conversation: false
+    mappings:
+      - type: custom
 
 responses:
   utter_greet:
@@ -201,7 +254,7 @@ responses:
           payload: '/goodbye'
   
   utter_ajuda:
-    - text: "Posso ajudar-te a encontrar receitas! Basta dizeres 'quero cozinhar algo' e vou guiar-te através de algumas perguntas para encontrar a receita perfeita. 😊"
+    - text: "Posso ajudar-te a encontrar as melhores receitas! Basta dizeres 'Quero cozinhar algo' e vou guiar-te através de algumas perguntas para encontrar a receita perfeita. 😊"
   
   utter_iamabot:
     - text: "Sou um assistente virtual de receitas criado para te ajudar a cozinhar! 🤖👨‍🍳"
@@ -212,12 +265,49 @@ responses:
   utter_perguntar_ingredientes:
     - text: "Diz-me, que ingredientes tens aí em casa? (Ex: tenho batata, ovos e cebola)"
 
+
+  utter_sem_receita_selecionada:
+    - text: "Ups, não tenho nenhuma receita selecionada. Escolhe uma receita primeiro na lista 🙂"
+
+  utter_avaliacao_obrigado:
+    - text: "Obrigado pela avaliação! ⭐"
+
+  utter_guardado_favoritos:
+    - text: "Feito ✅ Guardei nos teus favoritos!"
+
+
+
+  utter_ok_sem_favoritos:
+    - text: "Perfeito 🙂"
+
+
 actions:
   - action_buscar_receitas
   - action_mostrar_receitas
   - action_mostrar_receita_completa
   - action_reset_slots
   - action_buscar_por_ingredientes
+  - action_iniciar_modo_passo
+  - action_mostrar_ingredientes_da_receita
+  - action_mostrar_passo_atual
+  - action_proximo_passo
+  - action_abandonar_receita
+
+  - action_regressar_passo
+
+  - action_perguntar_avaliacao
+  - action_registar_recente_e_perguntar_favoritos
+  - action_guardar_favoritos_csv
+
+  - action_remover_favoritos_csv
+
+  - action_mostrar_recentes_resumo
+  - action_mostrar_recentes_todas
+  - action_mostrar_recentes_por_categoria
+
+  - action_mostrar_favoritos_lista
+  - action_mostrar_favoritos_por_categoria
+  - action_mostrar_favoritos_filtrados_por_categoria
 
 session_config:
   session_expiration_time: 60

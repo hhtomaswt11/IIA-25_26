@@ -214,4 +214,166 @@ nlu:
     - tenho [leite condensado](ingrediente_possuido) e [bolacha](ingrediente_possuido)
     - [abacate](ingrediente_possuido)
     - [massa](ingrediente_possuido) e [natas](ingrediente_possuido)
-  
+
+
+
+- intent: comecar
+  examples: |
+    - começar
+    - comecar
+    - começar modo a passo
+    - iniciar modo a passo
+    - quero começar
+
+- intent: confirmar_ingredientes
+  examples: |
+    - sim
+    - sim, vamos lá
+    - tenho tudo
+    - pronto
+    - bora
+
+- intent: mostrar_ingredientes_primeiro
+  examples: |
+    - mostrar ingredientes primeiro
+    - mostra os ingredientes
+    - quero ver os ingredientes
+    - ingredientes
+
+- intent: proximo_passo
+  examples: |
+    - próximo
+    - proximo
+    - próximo passo
+    - continuar
+    - segue
+
+- intent: abandonar_receita
+  examples: |
+    - abandonar
+    - parar
+    - desistir
+    - cancelar receita
+    - sair do modo a passo
+
+- intent: avaliar_receita
+  examples: |
+    - avaliar
+    - cinco estrelas
+    - 5 estrelas
+    - gostei muito
+
+- intent: regressar_passo
+  examples: |
+    - regressar
+    - voltar um passo
+    - passo anterior
+    - anterior
+
+- intent: finalizar_receita
+  examples: |
+    - finalizar
+    - terminar
+    - acabei
+    - concluir receita
+    - finalizar receita
+
+
+
+
+
+- intent: dar_avaliacao
+  examples: |
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - dou 5
+    - 4 estrelas
+    - cinco estrelas
+
+- intent: nao_avaliar
+  examples: |
+    - não avaliar
+    - nao avaliar
+    - passar
+    - não quero avaliar
+
+- intent: favoritar_sim
+  examples: |
+    - sim
+    - sim quero
+    - guardar
+    - adicionar aos favoritos
+
+- intent: favoritar_nao
+  examples: |
+    - não
+    - nao
+    - não quero
+    - agora não
+
+
+
+- intent: remover_sim
+  examples: |
+    - sim
+    - remover
+    - tira dos favoritos
+
+- intent: remover_nao
+  examples: |
+    - não
+    - nao
+    - deixa
+    - manter
+
+
+
+
+
+
+
+
+- intent: listar_recentes
+  examples: |
+    - lista as minhas receitas mais recentes
+    - mostra as receitas recentes
+    - o que cozinhei recentemente
+    - receitas que fiz recentemente
+    - mostra as ultimas receitas que fiz 
+    - mostra as minhas ultimas receitas feitas 
+
+
+- intent: recentes_ver_todas
+  examples: |
+    - ver todas
+    - mostra todas
+    - listar todas as recentes
+
+- intent: recentes_por_categoria
+  examples: |
+    - por categoria
+    - recentes por categoria
+    - agrupar por categoria
+
+- intent: listar_favoritos
+  examples: |
+    - mostra as minhas receitas favoritas
+    - lista os meus favoritos
+    - receitas guardadas nos favoritos
+    - favoritos
+
+- intent: favoritos_por_categoria
+  examples: |
+    - favoritos por categoria
+    - agrupar favoritos por categoria
+    - por categoria
+
+- intent: favoritos_filtrar_categoria
+  examples: |
+    - favoritos de [entrada](categoria)
+    - mostra favoritos de [sobremesa](categoria)
+    - favoritos de [prato_principal](categoria)
+    - filtrar favoritos por [entrada](categoria)
