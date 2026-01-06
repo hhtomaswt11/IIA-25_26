@@ -643,7 +643,7 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
             avaliacao = None
 
         # Guardar em recentes.csv (sempre)
-        caminho = "recentes.csv"
+        caminho = "db/recentes.csv"
         header = [
             "data_finalizacao",
             "id",
@@ -704,7 +704,7 @@ class ActionGuardarFavoritosCSV(Action):
             dispatcher.utter_message(response="utter_sem_receita_selecionada")
             return []
 
-        caminho = "favoritos.csv"
+        caminho = "db/favoritos.csv"
         header = [
             "data_favorito",
             "id",
