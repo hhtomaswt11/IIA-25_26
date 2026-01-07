@@ -43,7 +43,7 @@ def carregar_receitas():
     # Tenta encontrar o ficheiro na raiz ou na pasta data_source
     caminho_csv = "recipes.csv"
     if not os.path.exists(caminho_csv):
-        caminho_csv = os.path.join("data_source", "recipes.csv")
+        caminho_csv = os.path.join("db", "recipes.csv")
 
     if not os.path.exists(caminho_csv):
         print(f"❌ ERRO CRÍTICO: Não encontrei 'recipes.csv'.")
@@ -1221,3 +1221,100 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
 
         # IMPORTANTÍSSIMO: guardar para o /ver_receita funcionar como sempre
         return [SlotSet("receitas_encontradas", filtradas)]
+
+
+
+
+class ActionBuscarPorNome(Action):
+    def name(self) -> Text:
+        return "action_buscar_por_nome"
+    
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        nome_receita = tracker.get_slot("nome_receita")
+        
+        if not nome_receita:
+            dispatcher.utter_message(text="Não percebi que receita queres. Podes repetir?")
+            return []
+
+        todas_receitas = carregar_receitas()
+        receitas_pontuadas = []
+        nome_busca = nome_receita.lower().strip()
+
+        print(f"🔍 BUSCA POR NOME: '{nome_busca}'")
+        
+        # Palavras que não ajudam na busca
+        palavras_ignorar = ["de", "com", "em", "para", "do", "da", "os", "as", "a", "o", "um", "uma", "quero", "fazer", "cozinhar"]
+        palavras_chave = [p for p in nome_busca.split() if p not in palavras_ignorar and len(p) > 2]
+        
+        print(f"📝 PALAVRAS-CHAVE EXTRAÍDAS: {palavras_chave}")
+
+        for receita in todas_receitas:
+            titulo_receita = receita['titulo'].lower()
+            
+            score = 0
+            
+            # 1. TÍTULO - PESO MÁXIMO (95% do score)
+            matches_titulo = sum(1 for p in palavras_chave if p in titulo_receita)
+            
+            if matches_titulo > 0:
+                # Peso massivo para matches no título
+                score += matches_titulo * 1000
+                
+                # Bónus gigante se o nome exato estiver no título
+                if nome_busca in titulo_receita:
+                    score += 5000
+                
+                # Bónus extra se o título começar com a palavra-chave
+                for palavra in palavras_chave:
+                    if titulo_receita.startswith(palavra):
+                        score += 2000
+                
+                print(f"  ✅ '{receita['titulo']}' → Score: {score} (matches título: {matches_titulo})")
+            
+            # 2. INGREDIENTES - PESO MÍNIMO (apenas para desempate fino)
+            if matches_titulo > 0:
+                ingredientes_texto = " ".join(receita['ingredientes']).lower()
+                # Remove termos de medição para evitar falsos positivos
+                ingredientes_limpos = re.sub(r'colher(es)?\s*(de\s*)?(sopa|sobremesa|chá|café)', '', ingredientes_texto)
+                matches_ingredientes = sum(1 for p in palavras_chave if p in ingredientes_limpos)
+                score += matches_ingredientes * 1  # Peso insignificante
+
+            # 3. Bónus de qualidade (muito pequeno, apenas desempate)
+            score += (receita['rating'] * 0.5)
+
+            # 4. Penalização de tamanho (favorece títulos mais curtos e precisos)
+            score -= (len(titulo_receita) * 0.5)
+
+            # Só adiciona se tiver match no título (score > 500)
+            if score > 500: 
+                receitas_pontuadas.append((score, receita))
+
+        print(f"\n📊 TOTAL FILTRADAS: {len(receitas_pontuadas)} receitas")
+
+        # Ordenar por pontuação
+        receitas_pontuadas.sort(key=lambda x: x[0], reverse=True)
+        
+        # Retorna as TOP 10
+        top_receitas = [r[1] for r in receitas_pontuadas[:10]]  # Top 10 receitas com maior pontuação
+        
+        print(f"🏆 TOP 10 FINAL:")
+        for i, (score, r) in enumerate(receitas_pontuadas[:10], 1):
+            print(f"  {i}. {r['titulo']} (Score: {score:.1f})")
+
+        if not top_receitas:
+            dispatcher.utter_message(
+                text=f"Não encontrei receitas de '{nome_receita}'. Queres tentar outro termo?",
+                buttons=[{"title": "🔄 Nova Busca", "payload": "/nova_busca"}]
+            )
+            return [SlotSet("nome_receita", None)]
+
+        return [
+            SlotSet("receitas_encontradas", top_receitas),
+            FollowupAction("action_mostrar_receitas")
+        ]
+
+
+
+
+
+

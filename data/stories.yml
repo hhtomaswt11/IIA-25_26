@@ -290,3 +290,32 @@ stories:
         - ingrediente_possuido: atum
     - action: action_buscar_por_ingredientes
     - action: action_mostrar_receitas
+
+
+
+
+
+
+- story: busca por nome de receita
+  steps:
+    - intent: quero_cozinhar_receita_especifica
+      entities:
+        - nome_receita: creme de abóbora
+    - slot_was_set:
+        - nome_receita: creme de abóbora
+    - action: action_buscar_por_nome
+    - action: action_mostrar_receitas
+    - intent: ver_receita
+      entities:
+        - numero_receita: "1"
+    - action: action_mostrar_receita_completa
+
+- story: busca por nome - direto após cumprimento
+  steps:
+    - intent: greet
+    - action: utter_greet
+    - intent: quero_cozinhar_receita_especifica
+      entities:
+        - nome_receita: bacalhau
+    - action: action_buscar_por_nome
+    - action: action_mostrar_receitas

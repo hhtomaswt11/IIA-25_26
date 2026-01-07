@@ -18,6 +18,8 @@ intents:
   - ajuda
   - bot_challenge
   - informar_ingredientes_disponiveis
+  - quero_cozinhar_receita_especifica  # ← NOVO
+
 
   - comecar
   - confirmar_ingredientes
@@ -60,6 +62,8 @@ entities:
   - numero_receita
   - ingrediente_possuido
   - avaliacao_utilizador
+  - nome_receita 
+
   
 slots:
 
@@ -162,6 +166,12 @@ slots:
     influence_conversation: false
     mappings:
       - type: custom
+
+  nome_receita:  # ← NOVO
+    type: text
+    mappings:
+      - type: from_entity
+        entity: nome_receita
 
 responses:
   utter_greet:
@@ -312,6 +322,10 @@ actions:
 
 
   - action_mostrar_recentes_filtrados_por_categoria
+
+
+  - action_buscar_por_nome 
+
 
 session_config:
   session_expiration_time: 60

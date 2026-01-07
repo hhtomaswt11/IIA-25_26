@@ -171,3 +171,11 @@ rules:
     - intent: recentes_filtrar_categoria
     - action: action_mostrar_recentes_filtrados_por_categoria
 
+
+
+
+- rule: Procurar receita por nome específico
+  steps:
+    - intent: procurar_receita_por_nome
+    - action: action_buscar_por_nome
+

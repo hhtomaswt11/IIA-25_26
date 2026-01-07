@@ -29,19 +29,11 @@ nlu:
 - intent: quero_cozinhar
   examples: |
     - quero cozinhar algo
-    - quero fazer comida
-    - quero uma receita
-    - preciso de uma receita
+    - sugere-me uma receita
+    - o que posso fazer hoje?
     - ajuda-me a cozinhar
-    - o que posso cozinhar
-    - quero preparar algo
-    - tenho fome
-    - vou cozinhar
-    - quero fazer um prato
-    - dá-me uma receita
-    - sugere uma receita
-    - quero fazer jantar
-    - quero fazer almoço
+
+
 
 - intent: escolher_categoria
   examples: |
@@ -366,3 +358,53 @@ nlu:
     - recentes de [prato_principal](categoria)
     - filtrar recentes por [entrada](categoria)
 
+
+
+- intent: quero_cozinhar_receita_especifica
+  examples: |
+    - quero cozinhar [creme de abóbora](nome_receita)
+    - quero fazer [arroz de pato](nome_receita)
+    - tenho vontade de [bacalhau à brás](nome_receita)
+    - quero preparar [bolo de chocolate](nome_receita)
+    - como faço [francesinha](nome_receita)
+    - receita de [caldo verde](nome_receita)
+    - quero [lasanha](nome_receita)
+    - fazer [panquecas](nome_receita)
+    - cozinhar [risotto](nome_receita)
+    - preparar [mousse de chocolate](nome_receita)
+    - [pastéis de nata](nome_receita)
+    - [açorda](nome_receita)
+    - [feijoada](nome_receita)
+    - como fazer [pudim](nome_receita)
+    - receita para [sopa de legumes](nome_receita)
+    - quero fazer [sanduíche](nome_receita)
+    - [sanduíche](nome_receita)
+    - quero fazer [nuvem de ovos](nome_receita)
+    - [nuvem de ovos](nome_receita)
+    - quero [bolo](nome_receita)
+    - [sopa](nome_receita)
+    - fazer [massa](nome_receita)
+    - quero [pizza](nome_receita)
+    - [hamburger](nome_receita)
+    - como fazer [arroz](nome_receita)
+    - [frango](nome_receita)
+    - quero fazer [peixe](nome_receita)
+    - [salada](nome_receita)
+    - como faço [bacalhau](nome_receita)
+    - [carne](nome_receita)
+    - quero fazer [omelete](nome_receita)
+    - [batatas fritas](nome_receita)
+    - quero cozinhar [esparguete](nome_receita)
+    - fazer [tarte](nome_receita)
+    - [mousse](nome_receita)
+    - quero [gelado](nome_receita)
+    - [biscoitos](nome_receita)
+    - como fazer [crepes](nome_receita)
+    - quero fazer [quiche](nome_receita)
+    - como faço [leite creme](nome_receita)
+    - receita de [coroa de natal](nome_receita)
+    - quero cozinhar [creme de abóbora](nome_receita)
+    - quero cozinhar [lulas](nome_receita)
+    - quero fazer [lulas](nome_receita)
+    - quero fazer [ovo](nome_receita)
+    - quero cozinhar [lulas](nome_receita)
