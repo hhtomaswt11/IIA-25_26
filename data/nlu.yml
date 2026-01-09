@@ -206,6 +206,10 @@ nlu:
     - tenho [leite condensado](ingrediente_possuido) e [bolacha](ingrediente_possuido)
     - [abacate](ingrediente_possuido)
     - [massa](ingrediente_possuido) e [natas](ingrediente_possuido)
+    - tenho [frango](ingrediente_possuido), [arroz](ingrediente_possuido) e [natas](ingrediente_possuido), o que posso fazer?
+    - tenho [atum](ingrediente_possuido). O que posso fazer?
+    - com [atum](ingrediente_possuido), o que posso fazer?
+
 
 
 
@@ -357,6 +361,10 @@ nlu:
     - mostra recentes de [sobremesa](categoria)
     - recentes de [prato_principal](categoria)
     - filtrar recentes por [entrada](categoria)
+    - recentes de [sobremesa](categoria)
+    - mostra receitas recentes de [sobremesa](categoria)
+    - mostra receitas recentes de [prato_principal](categoria)
+        
 
 
 

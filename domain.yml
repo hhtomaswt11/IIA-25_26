@@ -180,7 +180,7 @@ responses:
   
   utter_goodbye:
     - text: "Até logo! Bom apetite! 😋"
-    - text: "Tchau! Espero que a receita corra bem! 👋"
+    - text: "Tchau! 👋"
   
   utter_inicio_descoberta:
     - text: "Ótimo! Vamos encontrar a receita perfeita para ti. Vou fazer algumas perguntas rápidas."
@@ -196,7 +196,7 @@ responses:
           payload: '/escolher_categoria{{"categoria":"sobremesa"}}'
         - title: "🎲 Tanto faz"
           payload: '/escolher_categoria{{"categoria":"tudo"}}'
-  
+
   utter_perguntar_tempo:
     - text: "Quanto tempo tens disponível?"
       buttons:

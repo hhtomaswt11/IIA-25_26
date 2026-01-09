@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefBot - Assistente de Receitas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        .delay-150 {
+            animation-delay: 0.15s;
+        }
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden">
+    <div id="app" class="flex flex-col h-screen bg-gradient-to-br from-orange-50 via-white to-red-50"></div>
+
+    <script>
+        const RASA_URL = 'http://localhost:5005/webhooks/rest/webhook';
+        
+        let messages = [
+            {
+                type: 'bot',
+                text: 'Olá! Bem-vindo ao Assistente de Receitas! 👨‍🍳',
+                timestamp: new Date()
+            }
+        ];
+        let isTyping = false;
+        let input = '';
+
+        const quickActions = [
+            { text: 'Quero cozinhar algo', icon: '👨‍🍳', color: 'from-orange-400 to-red-500' },
+            { text: 'Mostrar favoritos', icon: '❤️', color: 'from-pink-400 to-rose-500' },
+            { text: 'Receitas recentes', icon: '🕐', color: 'from-blue-400 to-indigo-500' },
+        ];
+
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 py-4 shadow-lg">
+                    <div class="flex items-center justify-between max-w-4xl mx-auto">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl">
+                                <span class="text-3xl">👨‍🍳</span>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold">ChefBot</h1>
+                                <p class="text-sm text-orange-100">Assistente de Receitas Inteligente</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-sm">Online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div class="flex-1 overflow-y-auto px-4 py-6" id="messagesArea">
+                    <div class="max-w-4xl mx-auto">
+                        ${messages.length === 1 ? `
+                            <div class="text-center mb-8">
+                                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full mb-4 shadow-xl">
+                                    <span class="text-4xl">✨</span>
+                                </div>
+                                <h2 class="text-2xl font-bold text-gray-800 mb-2">Como posso ajudar?</h2>
+                                <p class="text-gray-600 mb-6">Escolhe uma opção ou escreve a tua pergunta</p>
+                                
+                                <div class="flex flex-wrap gap-3 justify-center">
+                                    ${quickActions.map(action => `
+                                        <button
+                                            onclick="sendMessage('${action.text}')"
+                                            class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${action.color} text-white rounded-full shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-medium cursor-pointer"
+                                        >
+                                            <span>${action.icon}</span>
+                                            ${action.text}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${messages.map((message, index) => renderMessage(message, index)).join('')}
+                        
+                        ${isTyping ? `
+                            <div class="flex justify-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg">
+                                        <span class="text-xl">👨‍🍳</span>
+                                    </div>
+                                    <div class="bg-white rounded-2xl px-6 py-3 shadow-md border border-gray-200">
+                                        <div class="flex gap-1">
+                                            <div class="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                                            <div class="w-2 h-2 bg-orange-400 rounded-full animate-bounce delay-150"></div>
+                                            <div class="w-2 h-2 bg-orange-400 rounded-full animate-bounce delay-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="bg-white border-t border-gray-200 px-4 py-4 shadow-lg">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="flex gap-3 items-center">
+                            <div class="flex-1 relative">
+                                <input
+                                    type="text"
+                                    id="messageInput"
+                                    value="${input}"
+                                    placeholder="Escreve a tua mensagem..."
+                                    class="w-full px-5 py-3 pr-12 rounded-full border-2 border-gray-300 focus:border-orange-400 focus:outline-none transition-colors placeholder-gray-400"
+                                />
+                                <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+                            </div>
+                            <button
+                                onclick="sendMessageFromInput()"
+                                class="bg-gradient-to-r from-orange-500 to-red-600 text-white p-3 rounded-full hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                            >
+                                <span class="text-xl">📤</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center mt-2">
+                            Pressiona Enter para enviar • Powered by Rasa
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            // Event listeners
+            const inputEl = document.getElementById('messageInput');
+            if (inputEl) {
+                inputEl.addEventListener('input', (e) => {
+                    input = e.target.value;
+                });
+                inputEl.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessageFromInput();
+                    }
+                });
+            }
+
+            // Auto scroll
+            setTimeout(() => {
+                const messagesArea = document.getElementById('messagesArea');
+                if (messagesArea) {
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                }
+            }, 100);
+        }
+
+        function renderMessage(message, index) {
+            const isBot = message.type === 'bot';
+            const formattedText = formatText(message.text);
+            
+            return `
+                <div class="flex ${isBot ? 'justify-start' : 'justify-end'} mb-4 animate-fadeIn">
+                    <div class="flex max-w-[80%] ${isBot ? 'flex-row' : 'flex-row-reverse'}">
+                        <div class="flex-shrink-0 ${isBot ? 'mr-3' : 'ml-3'}">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center ${
+                                isBot ? 'bg-gradient-to-br from-orange-400 to-red-500' : 'bg-gradient-to-br from-blue-500 to-purple-600'
+                            } shadow-lg">
+                                ${isBot ? '<span class="text-xl">👨‍🍳</span>' : '<span class="text-white font-bold">U</span>'}
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col">
+                            <div class="rounded-2xl px-4 py-3 shadow-md ${
+                                isBot 
+                                    ? 'bg-white border border-gray-200' 
+                                    : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                            }">
+                                <div class="whitespace-pre-wrap break-words">
+                                    ${formattedText}
+                                </div>
+                            </div>
+
+                            ${message.buttons && message.buttons.length > 0 ? `
+                                <div class="flex flex-wrap gap-2 mt-3">
+                                    ${message.buttons.map((button, btnIndex) => `
+                                        <button
+                                            onclick="handleButtonClick(decodeURIComponent('${encodeURIComponent(button.payload)}'))"
+
+
+                                            class="px-4 py-2 bg-white border-2 border-orange-400 text-orange-600 rounded-full hover:bg-orange-400 hover:text-white transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105 cursor-pointer"
+                                        >
+                                            ${button.title}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
+                            <span class="text-xs text-gray-400 mt-1 ${isBot ? 'text-left' : 'text-right'}">
+                                ${message.timestamp.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatText(text) {
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
+        }
+
+        async function sendMessage(text) {
+            if (!text.trim()) return;
+
+            messages.push({
+                type: 'user',
+                text: text,
+                timestamp: new Date()
+            });
+            input = '';
+            isTyping = true;
+            render();
+
+            try {
+                const response = await fetch(RASA_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sender: 'user',
+                        message: text
+                    })
+                });
+
+                const data = await response.json();
+                isTyping = false;
+
+                if (data && data.length > 0) {
+                    data.forEach(msg => {
+                        messages.push({
+                            type: 'bot',
+                            text: msg.text,
+                            buttons: msg.buttons,
+                            timestamp: new Date()
+                        });
+                    });
+                }
+                render();
+            } catch (error) {
+                isTyping = false;
+                messages.push({
+                    type: 'bot',
+                    text: '❌ Erro ao conectar com o servidor. Certifica-te que o Rasa está a correr em localhost:5005',
+                    timestamp: new Date()
+                });
+                render();
+                console.error('Erro:', error);
+            }
+        }
+
+        function sendMessageFromInput() {
+            const text = input.trim();
+            if (text) {
+                sendMessage(text);
+            }
+        }
+
+        function handleButtonClick(payload) {
+            sendMessage(payload);
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>

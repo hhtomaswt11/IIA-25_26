@@ -643,7 +643,7 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
             avaliacao = None
 
         # Guardar em recentes.csv (sempre)
-        caminho = "db/recentes.csv"
+        caminho = "recentes.csv"
         header = [
             "data_finalizacao",
             "id",
@@ -704,7 +704,7 @@ class ActionGuardarFavoritosCSV(Action):
             dispatcher.utter_message(response="utter_sem_receita_selecionada")
             return []
 
-        caminho = "db/favoritos.csv"
+        caminho = "favoritos.csv"
         header = [
             "data_favorito",
             "id",
@@ -1254,7 +1254,11 @@ class ActionBuscarPorNome(Action):
             score = 0
             
             # 1. TÍTULO - PESO MÁXIMO (95% do score)
-            matches_titulo = sum(1 for p in palavras_chave if p in titulo_receita)
+            # matches_titulo = sum(1 for p in palavras_chave if p in titulo_receita)
+            titulo_palavras = re.findall(r'\b\w+\b', titulo_receita)
+
+            matches_titulo = sum(1 for p in palavras_chave if p in titulo_palavras)
+
             
             if matches_titulo > 0:
                 # Peso massivo para matches no título
