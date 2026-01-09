@@ -150,15 +150,13 @@
         }
 
         function deleteConversation(id) {
-            if (confirm('Tens a certeza que queres apagar esta conversa?')) {
-                conversations = conversations.filter(c => c.id !== id);
-                saveConversations();
-                
-                if (viewingHistoryId === id) {
-                    createNewConversation();
-                } else {
-                    render();
-                }
+            conversations = conversations.filter(c => c.id !== id);
+            saveConversations();
+            
+            if (viewingHistoryId === id) {
+                createNewConversation();
+            } else {
+                render();
             }
         }
 

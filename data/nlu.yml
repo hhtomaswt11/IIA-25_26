@@ -64,6 +64,8 @@ nlu:
     - algo [rápido](tempo:ate_30min)
     - [30min](tempo:ate_30min)
     - [1 hora](tempo:30_60min)
+    - tanto faz 
+    - indiferente 
 
 - intent: escolher_dificuldade
   examples: |
@@ -74,11 +76,12 @@ nlu:
     - [difícil](dificuldade)
     - algo [difícil](dificuldade)
     - [qualquer](dificuldade)
-    - tanto faz a dificuldade
     - não importa
     - sou [iniciante](dificuldade:facil)
     - sou [experiente](dificuldade:dificil)
     - nivel [medio](dificuldade)
+    - qualquer 
+    - qualquer uma 
 
 - intent: escolher_restricoes
   examples: |
@@ -340,6 +343,8 @@ nlu:
     - receitas que fiz recentemente
     - mostra as ultimas receitas que fiz 
     - mostra as minhas ultimas receitas feitas 
+    - mostrar recentes 
+    - receitas recentes 
 
 
 
@@ -350,6 +355,7 @@ nlu:
     - lista os meus favoritos
     - receitas guardadas nos favoritos
     - favoritos
+    - mostrar favoritos 
 
 
 
