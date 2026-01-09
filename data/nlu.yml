@@ -36,14 +36,9 @@ nlu:
     - o que posso fazer hoje?
     - ajuda-me a cozinhar
 
-
-
 - intent: escolher_categoria
   examples: |
-    - [entrada](categoria)
     - quero uma [entrada](categoria)
-    - [prato principal](categoria)
-    - [sobremesa](categoria)
     - quero fazer uma [sobremesa](categoria)
     - um [lanche](categoria) rápido
     - qualquer [prato principal](categoria)
@@ -99,6 +94,8 @@ nlu:
     - [sem ovo](restricao:sem_ovo)
     - [sem ovos](restricao:sem_ovo)
     - [nenhuma](restricao)
+    - [nenhum](restricao)
+    - [nada](restricao)
     - não tenho restrições
     - sem restrições
     - como de tudo
@@ -140,14 +137,13 @@ nlu:
 
 - intent: ver_receita
   examples: |
-    - ver receita 1
-    - mostrar receita 2
-    - quero ver a primeira
-    - a segunda receita
-    - receita número 3
     - ver a receita [1](numero_receita)
     - mostrar [2](numero_receita)
     - detalhes da receita [3](numero_receita)
+    - detalhes da receita [1](numero_receita)
+    - ver receita [1](numero_receita)
+    - ver receita [2](numero_receita)
+    - ver receita [5](numero_receita)
     - ver a receita [2](numero_receita)
     - ver a receita [3](numero_receita)
     - ver a [1](numero_receita)
@@ -157,6 +153,9 @@ nlu:
     - quero ver a terceira receita 
     - mostrar [6](numero_receita)
     - mostrar [1](numero_receita)
+    - mostrar receita [3](numero_receita)
+    - mostrar receita [2](numero_receita)
+   
 
 
     
@@ -180,6 +179,8 @@ nlu:
     - anterior
     - retroceder
     - voltar atrás
+    - voltar a lista 
+    - volta a lista 
 
 - intent: affirm
   examples: |
@@ -366,9 +367,23 @@ nlu:
 
 
 
+- intent: recentes_por_categoria
+  examples: |
+    - recentes por categoria 
+    - mostra as receitas recentes por categoria 
+    - ver receitas recentes por categoria 
+    - ver recentes por categoria 
+    - filtrar receitas recentes por categoria 
+    - filtrar recentes por categoria 
 
-
-
+- intent: favoritos_por_categoria
+  examples: |
+    - favoritas por categoria 
+    - mostra as receitas favoritas por categoria 
+    - ver receitas favoritas por categoria 
+    - ver favoritas por categoria 
+    - filtrar receitas favoritas por categoria 
+    - filtrar favoritas por categoria 
 
 
 - intent: listar_recentes
@@ -467,3 +482,22 @@ nlu:
     - mostra me receitas com [massa](nome_receita)
     - mostra me receitas com [frango](nome_receita)
 
+
+
+
+
+- intent: recentes_ver_todas
+  examples: |
+    - ver todas as receitas recentes
+    - ver todas as recentes 
+    - todas as recentes 
+    - mostrar todas as recentes 
+    - mostrar todas as receitas recentes 
+
+- intent: listar_favoritos
+  examples: |
+    - ver todas as receitas favoritas 
+    - ver todas as favoritas
+    - todos os favoritos
+    - mostrar todas as favoritas 
+    - mostrar todas as receitas favoritas 

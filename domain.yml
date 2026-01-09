@@ -176,7 +176,7 @@ slots:
 
 responses:
   utter_greet:
-    - text: "Olá! Bem-vindo ao Assistente de Receitas! 👨‍🍳"
+    - text: "Olá! Bem-vindo ao ChefBot! 👨‍🍳"
     - text: "Olá! Pronto para cozinhar algo delicioso? 🍳"
   
   utter_goodbye:

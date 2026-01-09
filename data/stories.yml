@@ -336,11 +336,6 @@ stories:
     - action: action_buscar_por_ingredientes
     - action: action_mostrar_receitas
 
-
-
-
-
-
 - story: busca por nome de receita
   steps:
     - intent: quero_cozinhar_receita_especifica
@@ -364,3 +359,39 @@ stories:
         - nome_receita: bacalhau
     - action: action_buscar_por_nome
     - action: action_mostrar_receitas
+
+
+
+
+
+
+
+
+- story: usuario pede recentes por categoria textualmente
+  steps:
+    - intent: listar_recentes
+    - action: action_mostrar_recentes_resumo
+    - intent: recentes_por_categoria
+    - action: action_mostrar_recentes_por_categoria
+
+- story: usuario pede favoritos por categoria textualmente
+  steps:
+    - intent: listar_favoritos
+    - action: action_mostrar_favoritos_lista
+    - intent: favoritos_por_categoria
+    - action: action_mostrar_favoritos_por_categoria
+
+
+
+
+- story: usuario pede ver todas receitas recentes textualmente
+  steps:
+    - intent: listar_recentes
+    - action: action_mostrar_recentes_resumo
+    - intent: recentes_ver_todas
+    - action: action_mostrar_recentes_todas
+
+- story: usuario pede ver todas favoritos textualmente
+  steps:
+    - intent: listar_favoritos
+    - action: action_mostrar_favoritos_lista

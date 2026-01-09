@@ -827,7 +827,6 @@ class ActionMostrarRecentesResumo(Action):
             buttons=[
                 {"title": "📋 Ver Todas", "payload": "/recentes_ver_todas"},
                 {"title": "🗂️ Por Categoria", "payload": "/recentes_por_categoria"},
-                {"title": "⬅️ Voltar", "payload": "/ajuda"},
             ],
         )
 
