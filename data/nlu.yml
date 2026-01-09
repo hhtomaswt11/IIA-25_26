@@ -148,6 +148,17 @@ nlu:
     - ver a receita [1](numero_receita)
     - mostrar [2](numero_receita)
     - detalhes da receita [3](numero_receita)
+    - ver a receita [2](numero_receita)
+    - ver a receita [3](numero_receita)
+    - ver a [1](numero_receita)
+    - ver a [2](numero_receita)
+    - mostra a receita [4](numero_receita)
+    - mostra a [4](numero_receita)
+    - quero ver a terceira receita 
+    - mostrar [6](numero_receita)
+    - mostrar [1](numero_receita)
+
+
     
 
 - intent: nova_busca
@@ -239,11 +250,13 @@ nlu:
 
 - intent: confirmar_ingredientes
   examples: |
-    - sim
+    - sim, tenho 
     - sim, vamos lá
     - tenho tudo
     - pronto
     - bora
+    - siga 
+    - tenho sim 
 
 - intent: mostrar_ingredientes_primeiro
   examples: |
@@ -268,12 +281,7 @@ nlu:
     - cancelar receita
     - sair do modo a passo
 
-- intent: avaliar_receita
-  examples: |
-    - avaliar
-    - cinco estrelas
-    - 5 estrelas
-    - gostei muito
+
 
 - intent: regressar_passo
   examples: |
@@ -301,9 +309,23 @@ nlu:
     - 3
     - 4
     - 5
+    - dou 1 
+    - dou 2 
+    - dou 3 
+    - dou 4
     - dou 5
     - 4 estrelas
+    - 1 estrela 
+    - 2 estrelas 
+    - 3 estrelas     
+    - 4 estrelas 
+    - 5 estrelas 
+    - uma estrela 
+    - duas estrelas 
+    - tres estrelas 
+    - quatro estrelas 
     - cinco estrelas
+
 
 - intent: nao_avaliar
   examples: |
@@ -314,10 +336,11 @@ nlu:
 
 - intent: favoritar_sim
   examples: |
-    - sim
+    - sim quero guardar 
     - sim quero
     - guardar
     - adicionar aos favoritos
+    - guardar por favor 
 
 - intent: favoritar_nao
   examples: |

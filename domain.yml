@@ -26,7 +26,6 @@ intents:
   - mostrar_ingredientes_primeiro
   - proximo_passo
   - abandonar_receita
-  - avaliar_receita
   - guardar_favoritos
 
   - regressar_passo
