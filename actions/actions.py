@@ -219,14 +219,14 @@ class ActionBuscarReceitas(Action):
         # --- LÓGICA DE FILTROS ---
 
         # 1. Categoria
-        if categoria and categoria != "tudo":
+        if categoria:
             # Normaliza para minúsculas para comparar
             cat_busca = categoria.lower()
             if cat_busca == "prato_principal":
                 receitas_filtradas = [r for r in receitas_filtradas if "prato principal" in r["categoria"]]
             else:
-                receitas_filtradas = [r for r in receitas_filtradas if cat_busca in r["categoria"]]
-        
+                receitas_filtradas = [r for r in receitas_filtradas if cat_busca in r["categoria"]]            
+      
         # 2. Tempo
         if tempo and tempo != "tanto_faz":
             if tempo == "ate_30min":
@@ -253,7 +253,9 @@ class ActionBuscarReceitas(Action):
                 "vegetariano": "vegetariano",
                 "vegano": "vegan",
                 "sem_gluten": "sem glúten",
-                "sem_lactose": "sem lactose"
+                "sem_lactose": "sem lactose",
+                "sem_acucar": "sem açúcar",  
+                "sem_ovo": "sem ovo",         
             }
             if restricao in restricao_map:
                 termo_busca = restricao_map[restricao]
@@ -270,7 +272,12 @@ class ActionBuscarReceitas(Action):
             receitas_filtradas = [r for r in receitas_filtradas if r["calorias"] <= 300]
         elif preferencia_calorica == "moderado":
             receitas_filtradas = [r for r in receitas_filtradas if 300 < r["calorias"] <= 600]
-        
+        elif preferencia_calorica == "reforçado":          # <-- NOVO
+            receitas_filtradas = [r for r in receitas_filtradas if 600 < r["calorias"] <= 900]
+        elif preferencia_calorica == "hipercalorico":      # <-- NOVO
+            receitas_filtradas = [r for r in receitas_filtradas if r["calorias"] > 900]
+
+            
         # Ordenar por rating (melhores primeiro) e pegar top 5
         receitas_filtradas.sort(key=lambda x: x['rating'], reverse=True)
         receitas_filtradas = receitas_filtradas[:5]

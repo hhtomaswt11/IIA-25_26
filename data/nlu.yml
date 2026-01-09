@@ -29,6 +29,9 @@ nlu:
 - intent: quero_cozinhar
   examples: |
     - quero cozinhar algo
+    - quero cozinhar alguma receita 
+    - quero fazer uma receita 
+    - quero fazer algo 
     - sugere-me uma receita
     - o que posso fazer hoje?
     - ajuda-me a cozinhar
@@ -42,16 +45,15 @@ nlu:
     - [prato principal](categoria)
     - [sobremesa](categoria)
     - quero fazer uma [sobremesa](categoria)
-    - [lanche](categoria)
     - um [lanche](categoria) rápido
-    - [tudo](categoria)
-    - tanto faz a categoria
     - qualquer [prato principal](categoria)
     - uma [entrada](categoria) leve
+    - quero uma [sobremesa](categoria)
+    - quero um [prato principal](categoria)
 
 - intent: escolher_tempo
   examples: |
-    - [até 30 minutos](tempo)
+    - [ate 30 minutos](tempo)
     - [menos de 30 minutos](tempo:ate_30min)
     - [30 a 60 minutos](tempo:30_60min)
     - [entre 30 e 60 minutos](tempo:30_60min)
@@ -64,8 +66,10 @@ nlu:
     - algo [rápido](tempo:ate_30min)
     - [30min](tempo:ate_30min)
     - [1 hora](tempo:30_60min)
-    - tanto faz 
-    - indiferente 
+    - [entre 30 minutos e 60 minutos](tempo:30_60min) 
+    - [entre 30 e 60 ](tempo:30_60min)
+    - [mais de 1h](tempo:mais_1h)
+    - [menos de 30](tempo:ate_30min)
 
 - intent: escolher_dificuldade
   examples: |
@@ -90,6 +94,10 @@ nlu:
     - [vegano](restricao)
     - [sem glúten](restricao:sem_gluten)
     - [sem lactose](restricao:sem_lactose)
+    - [sem açúcar](restricao:sem_acucar)
+    - [sem açucar](restricao:sem_acucar)
+    - [sem ovo](restricao:sem_ovo)
+    - [sem ovos](restricao:sem_ovo)
     - [nenhuma](restricao)
     - não tenho restrições
     - sem restrições
@@ -97,6 +105,8 @@ nlu:
     - tenho intolerância a [lactose](restricao:sem_lactose)
     - alergia ao [glúten](restricao:sem_gluten)
     - não como carne, [vegetariano](restricao)
+    - diabético, [sem açúcar](restricao:sem_acucar)
+    - alergia a [ovo](restricao:sem_ovo)
 
 - intent: informar_ingrediente_evitar
   examples: |
@@ -118,12 +128,15 @@ nlu:
     - [até 300 calorias](preferencia_calorica:leve)
     - [moderado](preferencia_calorica)
     - [300 a 600 calorias](preferencia_calorica:moderado)
+    - [300 a 600 calorias](preferencia_calorica:moderado)
+    - [reforçado](preferencia_calorica:reforçado)         
+    - [600 a 900 calorias](preferencia_calorica:reforçado)  
+    - [hipercalórico](preferencia_calorica:hipercalorico)   
+    - [+900 calorias](preferencia_calorica:hipercalorico)   
     - [sem restrição](preferencia_calorica:sem_restricao)
     - não importa as calorias
-    - tanto faz
-    - poucas calorias
-    - low calorie
-    - dieta
+
+
 
 - intent: ver_receita
   examples: |

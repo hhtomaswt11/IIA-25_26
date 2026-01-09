@@ -76,6 +76,51 @@ stories:
     - action: action_buscar_receitas
     - action: action_mostrar_receitas
 
+- story: usuario escolhe receita reforçada em calorias
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: prato_principal
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+      entities:
+        - preferencia_calorica: reforçado
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+- story: usuario escolhe receita hipercalórica
+  steps:
+    - intent: quero_cozinhar
+    - action: utter_inicio_descoberta
+    - action: utter_perguntar_categoria
+    - intent: escolher_categoria
+      entities:
+        - categoria: prato_principal
+    - action: utter_perguntar_tempo
+    - intent: escolher_tempo
+    - action: utter_perguntar_dificuldade
+    - intent: escolher_dificuldade
+    - action: utter_perguntar_restricoes
+    - intent: escolher_restricoes
+    - action: utter_perguntar_calorias
+    - intent: escolher_calorias
+      entities:
+        - preferencia_calorica: hipercalorico
+    - action: utter_procurando_receitas
+    - action: action_buscar_receitas
+    - action: action_mostrar_receitas
+
+
 - story: descoberta com ingrediente especifico para evitar
   steps:
     - intent: quero_cozinhar

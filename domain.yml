@@ -78,7 +78,6 @@ slots:
       - entrada
       - prato_principal
       - sobremesa
-      - tudo
     mappings:
       - type: from_entity
         entity: categoria
@@ -122,7 +121,10 @@ slots:
     values:
       - leve
       - moderado
+      - reforçado 
+      - hipercalorico 
       - sem_restricao
+
     mappings:
       - type: from_entity
         entity: preferencia_calorica
@@ -194,8 +196,6 @@ responses:
           payload: '/escolher_categoria{{"categoria":"prato_principal"}}'
         - title: "🍰 Sobremesa"
           payload: '/escolher_categoria{{"categoria":"sobremesa"}}'
-        - title: "🎲 Tanto faz"
-          payload: '/escolher_categoria{{"categoria":"tudo"}}'
 
   utter_perguntar_tempo:
     - text: "Quanto tempo tens disponível?"
@@ -221,6 +221,9 @@ responses:
         - title: "🎯 Qualquer"
           payload: '/escolher_dificuldade{{"dificuldade":"qualquer"}}'
   
+
+
+
   utter_perguntar_restricoes:
     - text: "Tens alguma restrição alimentar ou ingrediente que queiras evitar?"
       buttons:
@@ -232,14 +235,22 @@ responses:
           payload: '/escolher_restricoes{{"restricao":"sem_gluten"}}'
         - title: "🥛 Sem Lactose"
           payload: '/escolher_restricoes{{"restricao":"sem_lactose"}}'
+        - title: "🚫 Sem Açúcar"
+          payload: '/escolher_restricoes{{"restricao":"sem_acucar"}}'
+        - title: "🥚 Sem Ovo"
+          payload: '/escolher_restricoes{{"restricao":"sem_ovo"}}'
         - title: "✅ Nenhuma"
           payload: '/escolher_restricoes{{"restricao":"nenhuma"}}'
         - title: "✏️ Outro"
           payload: '/escolher_restricoes{{"restricao":"outro"}}'
-  
+
+
+
   utter_perguntar_ingrediente_especifico:
     - text: "Diz-me que ingrediente queres evitar (por exemplo: ovo, leite, cebola)"
   
+
+
   utter_perguntar_calorias:
     - text: "Queres uma opção mais leve ou não te importas com as calorias?"
       buttons:
@@ -247,9 +258,14 @@ responses:
           payload: '/escolher_calorias{{"preferencia_calorica":"leve"}}'
         - title: "🍽️ Moderado (300-600)"
           payload: '/escolher_calorias{{"preferencia_calorica":"moderado"}}'
+        - title: "🍔 Reforçado (600-900)"      # <-- NOVO
+          payload: '/escolher_calorias{{"preferencia_calorica":"reforçado"}}'
+        - title: "💪 Hipercalórico (+900)"      # <-- NOVO
+          payload: '/escolher_calorias{{"preferencia_calorica":"hipercalorico"}}'
         - title: "🍕 Sem restrição"
           payload: '/escolher_calorias{{"preferencia_calorica":"sem_restricao"}}'
-  
+
+
   utter_procurando_receitas:
     - text: "A procurar as melhores receitas para ti... 🔍"
   
