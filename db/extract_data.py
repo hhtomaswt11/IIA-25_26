@@ -14,9 +14,9 @@ CATEGORIAS = {
 }
 
 TARGETS = {
-    "Entrada": 500,
-    "Prato Principal": 500,
-    "Sobremesa": 500,
+    "Entrada": 1200,
+    "Prato Principal": 1200,
+    "Sobremesa": 1200,
 }
 
 HEADERS = {
@@ -104,6 +104,11 @@ def parse_recipe(url, categoria):
     # título
     title_tag = soup.find("h1")
     titulo = title_tag.get_text(strip=True) if title_tag else ""
+
+    # Ignorar receita se o título contiver "?"
+    if "?" in titulo:
+        print("  -> Ignorada: título contém '?'")
+        return None
 
     dificuldade = None
     tempo_total = None
