@@ -297,23 +297,28 @@ nlu:
     - 3
     - 4
     - 5
-    - dou 1 
-    - dou 2 
-    - dou 3 
-    - dou 4
-    - dou 5
-    - 4 estrelas
-    - 1 estrela 
-    - 2 estrelas 
-    - 3 estrelas     
-    - 4 estrelas 
-    - 5 estrelas 
-    - uma estrela 
-    - duas estrelas 
-    - tres estrelas 
-    - quatro estrelas 
+    - dou [1](avaliacao_utilizador)
+    - dou [2](avaliacao_utilizador)
+    - dou [3](avaliacao_utilizador)
+    - dou [4](avaliacao_utilizador)
+    - dou [5](avaliacao_utilizador)
+    - [1](avaliacao_utilizador) estrela
+    - [2](avaliacao_utilizador) estrelas
+    - [3](avaliacao_utilizador) estrelas    
+    - [4](avaliacao_utilizador) estrelas
+    - [5](avaliacao_utilizador) estrelas
+    - uma estrela
+    - duas estrelas
+    - tres estrelas
+    - quatro estrelas
     - cinco estrelas
+    - avalio com [1](avaliacao_utilizador)
+    - avalio com [2](avaliacao_utilizador)
+    - avalio com [3](avaliacao_utilizador)
+    - avalio com [4](avaliacao_utilizador)
+    - avalio com [5](avaliacao_utilizador)
 
+    
 - intent: nao_avaliar
   examples: |
     - não avaliar
