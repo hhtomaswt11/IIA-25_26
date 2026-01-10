@@ -240,9 +240,6 @@ responses:
           payload: '/escolher_restricoes{{"restricao":"sem_ovo"}}'
         - title: "✅ Nenhuma"
           payload: '/escolher_restricoes{{"restricao":"nenhuma"}}'
-        - title: "✏️ Outro"
-          payload: '/escolher_restricoes{{"restricao":"outro"}}'
-
 
 
   utter_perguntar_ingrediente_especifico:

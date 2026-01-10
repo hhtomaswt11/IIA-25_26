@@ -241,7 +241,7 @@ class ActionBuscarReceitas(Action):
                 receitas_filtradas = [r for r in receitas_filtradas if r["dificuldade"] in termos_aceites]
         
         # 4. Restrições (O teu CSV tem "Sem glúten", "Vegan", etc)
-        if restricao and restricao not in ["nenhuma", "outro"]:
+        if restricao and restricao not in ["nenhuma"]:
             restricao_map = {
                 "vegetariano": "vegetariano",
                 "vegano": "vegan",
