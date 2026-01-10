@@ -793,6 +793,22 @@ def _ler_csv_dicts(caminho: str) -> List[Dict[str, Any]]:
         return list(csv.DictReader(f, delimiter=";"))
 
 
+
+
+def _carregar_avaliacoes_recentes() -> Dict[str, str]:
+    """Carrega avaliações do recentes.csv e mapeia ID -> avaliação_utilizador"""
+    avaliacoes = {}
+    rows = _ler_csv_dicts("recentes.csv")
+    for row in rows:
+        rid = (row.get("id", "") or "").strip()
+        avaliacao = (row.get("avaliacao_utilizador", "") or "").strip()
+        if rid and avaliacao:
+            # Remove aspas ou espaços extras
+            avaliacao_limpa = avaliacao.replace('"', '').replace("'", "").strip()
+            if avaliacao_limpa and avaliacao_limpa != "None" and avaliacao_limpa != "null":
+                avaliacoes[rid] = avaliacao_limpa
+    return avaliacoes
+
 class ActionMostrarRecentesResumo(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_resumo"
@@ -852,10 +868,13 @@ class ActionMostrarRecentesTodas(Action):
         if not rows:      
             dispatcher.utter_message(
                 text="Ainda não tenho receitas recentes registadas 🙂",
-                buttons=[{"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"}],  # ALTERADO
+                buttons=[{"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"}],
             )
             return []
 
+        # Carregar avaliações
+        avaliacoes = _carregar_avaliacoes_recentes()
+        
         # Ordenar por data desc (mais recentes primeiro)
         rows.sort(key=lambda x: (x.get("data_finalizacao", "") or ""), reverse=True)
 
@@ -863,12 +882,15 @@ class ActionMostrarRecentesTodas(Action):
         todas = carregar_receitas()
         por_id = {r.get("id", ""): r for r in todas if r.get("id", "")}
 
-        # Converter recentes.csv -> lista de receitas (do dataset)
+        # Converter recentes.csv -> lista de receitas (do dataset) com avaliação
         recentes_receitas = []
         for row in rows:
             rid = (row.get("id", "") or "").strip()
             if rid and rid in por_id:
-                recentes_receitas.append(por_id[rid])
+                receita = por_id[rid].copy()
+                # Adicionar a avaliação do utilizador ao objeto da receita
+                receita['avaliacao_utilizador'] = avaliacoes.get(rid, "")
+                recentes_receitas.append(receita)
 
         if not recentes_receitas:
             dispatcher.utter_message(
@@ -880,7 +902,7 @@ class ActionMostrarRecentesTodas(Action):
         # Limitar a 10 receitas (ajusta se quiseres mais)
         recentes_receitas = recentes_receitas[:10]
 
-        # ✅ CONSTRUIR MENSAGEM NO FORMATO DOS FAVORITOS
+        # ✅ CONSTRUIR MENSAGEM COM AVALIAÇÃO DO UTILIZADOR
         msg = f"Tens {len(rows)} receitas feitas recentes:\n\n"
         buttons = []
 
@@ -894,23 +916,31 @@ class ActionMostrarRecentesTodas(Action):
             elif "difícil" in dificuldade_lower:
                 emoji = "😤"
 
+            # Obter avaliação do utilizador
+            avaliacao = receita.get('avaliacao_utilizador', '')
+            if avaliacao and avaliacao != 'None' and avaliacao != 'null':
+                linha_avaliacao = f" | ⭐ {avaliacao}"
+            else:
+                linha_avaliacao = " | ⭐ Não avaliou"
+
             msg += f"{i}. {emoji} **{receita.get('titulo', '')}**\n"
-            msg += f"   ⏱️ {receita.get('tempo_total', '')} | 🔥 {receita.get('calorias', 0)} Kcal\n\n"
+            msg += f"   ⏱️ {receita.get('tempo_total', '')} | 🔥 {receita.get('calorias', 0)} Kcal{linha_avaliacao}\n\n"
 
             buttons.append({
                 "title": f"Ver {i}: {receita.get('titulo','')}",
                 "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
             })
 
-        # Botões de navegação - ALTERAÇÃO AQUI
-        buttons.append({"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"})  # ALTERADO
+        # Botões de navegação
+        buttons.append({"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"})
         buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
         # ✅ CRÍTICO: Guardar no slot para /ver_receita funcionar
-        return [SlotSet("receitas_encontradas", recentes_receitas)]
-    
+        # IMPORTANTE: Não guardar a avaliação no slot para não interferir com outras ações
+        receitas_sem_avaliacao = [{k: v for k, v in r.items() if k != 'avaliacao_utilizador'} for r in recentes_receitas]
+        return [SlotSet("receitas_encontradas", receitas_sem_avaliacao)]
         
 class ActionMostrarRecentesPorCategoria(Action):
     def name(self) -> Text:
@@ -949,6 +979,7 @@ class ActionMostrarRecentesPorCategoria(Action):
         )
         return []
 
+
 class ActionMostrarRecentesFiltradosPorCategoria(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_filtrados_por_categoria"
@@ -961,12 +992,15 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
             dispatcher.utter_message(text="Ainda não tenho receitas recentes registadas 🙂")
             return []
 
+        # Carregar avaliações
+        avaliacoes = _carregar_avaliacoes_recentes()
+
         def match_categoria(cat: str) -> bool:
             c = (cat or "").strip().lower()
 
             if categoria_slot == "entrada":
                 return "entrada" in c
-            if categoria_slot in ["prato_principal", "prato principal"]:  # ✅ CORREÇÃO
+            if categoria_slot in ["prato_principal", "prato principal"]:
                 return ("prato principal" in c) or ("prato_principal" in c)
             if categoria_slot == "sobremesa":
                 return "sobremesa" in c
@@ -984,9 +1018,6 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
             "sobremesa": "Sobremesa",
         }.get(categoria_normalizada, "Categoria")
 
-
-
-
         if not filtradas_rows:
             dispatcher.utter_message(
                 text=f"Não tens receitas recentes na categoria **{nome_cat}** 🙂",
@@ -997,7 +1028,7 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
         # ordenar por data desc (mais recentes primeiro)
         filtradas_rows.sort(key=lambda x: (x.get("data_finalizacao", "") or ""), reverse=True)
 
-        # Carregar receitas completas e mapear por id (para ter tempo/kcal e poder /ver_receita funcionar)
+        # Carregar receitas completas e mapear por id
         todas = carregar_receitas()
         por_id = {r.get("id", ""): r for r in todas if r.get("id", "")}
 
@@ -1005,7 +1036,10 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
         for row in filtradas_rows:
             rid = (row.get("id", "") or "").strip()
             if rid and rid in por_id:
-                receitas.append(por_id[rid])
+                receita = por_id[rid].copy()
+                # Adicionar a avaliação do utilizador ao objeto da receita
+                receita['avaliacao_utilizador'] = avaliacoes.get(rid, "")
+                receitas.append(receita)
 
         if not receitas:
             dispatcher.utter_message(
@@ -1030,23 +1064,31 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
             elif "difícil" in dificuldade_lower:
                 emoji = "😤"
 
+            # Obter avaliação do utilizador
+            avaliacao = receita.get('avaliacao_utilizador', '')
+            if avaliacao and avaliacao != 'None' and avaliacao != 'null':
+                linha_avaliacao = f" | ⭐ {avaliacao}"
+            else:
+                linha_avaliacao = " | ⭐ Não avaliou"
+
             msg += f"{i}. {emoji} **{receita.get('titulo','')}**\n"
-            msg += f"   ⏱️ {receita.get('tempo_total','')} | 🔥 {receita.get('calorias',0)} Kcal\n\n"
+            msg += f"   ⏱️ {receita.get('tempo_total','')} | 🔥 {receita.get('calorias',0)} Kcal{linha_avaliacao}\n\n"
 
             buttons.append({
                 "title": f"Ver {i}: {receita.get('titulo','')}",
                 "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
             })
 
-        # ALTERAÇÃO AQUI: Mudar "Voltar" para "Por categoria"
         buttons.append({"title": "⬅️ Por categoria", "payload": "/recentes_por_categoria"})
         buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
-        # ✅ guardar para o /ver_receita continuar a funcionar como sempre
-        return [SlotSet("receitas_encontradas", receitas)]
-    
+        # ✅ guardar para o /ver_receita funcionar como sempre
+        # Remover a avaliação do objeto para não interferir com outras ações
+        receitas_sem_avaliacao = [{k: v for k, v in r.items() if k != 'avaliacao_utilizador'} for r in receitas]
+        return [SlotSet("receitas_encontradas", receitas_sem_avaliacao)]
+
 class ActionMostrarFavoritosLista(Action):
     def name(self) -> Text:
         return "action_mostrar_favoritos_lista"
