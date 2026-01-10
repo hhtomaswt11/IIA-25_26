@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from bs4.element import Tag
 import csv
 import re
 import time
@@ -32,38 +31,6 @@ CRITERIOS_POSSIVEIS = [
     "Sem açúcar",
     "Sem ovo",
 ]
-
-
-
-
-
-def iter_texto_da_seccao(soup, heading_text: str):
-    """
-    Devolve um iterador de strings APENAS da secção que vem a seguir
-    a um heading (h2/h3) com o texto 'heading_text', até ao próximo heading.
-    """
-    heading_text_norm = heading_text.strip().lower()
-
-    h = soup.find(
-        lambda tag: isinstance(tag, Tag)
-        and tag.name in ("h2", "h3")
-        and heading_text_norm in tag.get_text(" ", strip=True).strip().lower()
-    )
-    if not h:
-        return iter(())  # secção não encontrada
-
-    def _gen():
-        # Percorre elementos após o heading, até ao próximo h2/h3
-        for el in h.next_elements:
-            if isinstance(el, Tag) and el.name in ("h2", "h3"):
-                break
-            # apanha apenas strings limpas
-            if isinstance(el, str):
-                s = el.strip()
-                if s:
-                    yield s
-
-    return _gen()
 
 
 def normalizar(s: str) -> str:
@@ -230,16 +197,17 @@ def parse_recipe(url, categoria):
         print("  -> Ignorada: passos contêm ';'")
         return None
 
-    # critérios (APENAS na secção "Nutrição")
+    # critérios
     criterios_encontrados = []
     crit_norm_list = [(crit, normalizar(crit)) for crit in CRITERIOS_POSSIVEIS]
 
-    for text in iter_texto_da_seccao(soup, "Nutrição"):
-        t_norm = normalizar(text)
+    for text in soup.stripped_strings:
+        t_norm = normalizar(text.strip())
+        if not t_norm:
+            continue
         for crit_original, crit_norm in crit_norm_list:
             if crit_norm in t_norm and crit_original not in criterios_encontrados:
                 criterios_encontrados.append(crit_original)
-
 
     return {
         "titulo": titulo,
