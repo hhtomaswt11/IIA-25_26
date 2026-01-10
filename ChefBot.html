@@ -1,178 +1,207 @@
 <!DOCTYPE html>
 <html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChefBot - Assistente de Receitas</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🍳</text></svg>">
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🍳</text></svg>"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
-        .animate-fadeIn {
-            animation: fadeIn 0.3s ease-out;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
+      }
+      .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out;
+      }
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
         }
-        .animate-bounce {
-            animation: bounce 1s infinite;
+        50% {
+          transform: translateY(-5px);
         }
-        .delay-150 {
-            animation-delay: 0.15s;
-        }
-        .delay-300 {
-            animation-delay: 0.3s;
-        }
+      }
+      .animate-bounce {
+        animation: bounce 1s infinite;
+      }
+      .delay-150 {
+        animation-delay: 0.15s;
+      }
+      .delay-300 {
+        animation-delay: 0.3s;
+      }
+      .sidebar {
+        transition: transform 0.3s ease;
+      }
+      .sidebar-hidden {
+        transform: translateX(-100%);
+      }
+      @media (max-width: 768px) {
         .sidebar {
-            transition: transform 0.3s ease;
+          position: fixed;
+          z-index: 50;
         }
-        .sidebar-hidden {
-            transform: translateX(-100%);
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                z-index: 50;
-            }
-        }
+      }
     </style>
-</head>
-<body class="h-screen overflow-hidden">
-    <div id="app" class="flex h-screen bg-gradient-to-br from-orange-50 via-white to-red-50"></div>
+  </head>
+  <body class="h-screen overflow-hidden">
+    <div
+      id="app"
+      class="flex h-screen bg-gradient-to-br from-orange-50 via-white to-red-50"
+    ></div>
 
     <script>
-        const RASA_URL = 'http://localhost:5005/webhooks/rest/webhook';
-        
-        let messages = [
-            {
-                type: 'bot',
-                text: 'Olá! Bem-vindo ao ChefBot! 👨‍🍳',
-                timestamp: new Date()
-            }
+      const RASA_URL = "http://localhost:5005/webhooks/rest/webhook";
+
+      let messages = [
+        {
+          type: "bot",
+          text: "Olá! Bem-vindo ao ChefBot! 👨‍🍳",
+          timestamp: new Date(),
+        },
+      ];
+      let isTyping = false;
+      let input = "";
+      let conversations = [];
+      let currentConversationId = null;
+      let viewingHistoryId = null;
+      let sidebarOpen = true;
+
+      const quickActions = [
+        {
+          text: "Quero cozinhar algo",
+          icon: "👨‍🍳",
+          color: "from-orange-400 to-red-500",
+        },
+        {
+          text: "Mostrar favoritos",
+          icon: "❤️",
+          color: "from-pink-400 to-rose-500",
+        },
+        {
+          text: "Receitas recentes",
+          icon: "🕐",
+          color: "from-blue-400 to-indigo-500",
+        },
+      ];
+
+      // ===== GESTÃO DE CONVERSAS =====
+      function loadConversations() {
+        const saved = localStorage.getItem("chefbot_conversations");
+        if (saved) {
+          conversations = JSON.parse(saved);
+        }
+      }
+
+      function saveConversations() {
+        localStorage.setItem(
+          "chefbot_conversations",
+          JSON.stringify(conversations)
+        );
+      }
+
+      function createNewConversation() {
+        viewingHistoryId = null;
+        currentConversationId = Date.now().toString();
+        messages = [
+          {
+            type: "bot",
+            text: "Olá! Bem-vindo ao Assistente de Receitas! 👨‍🍳",
+            timestamp: new Date(),
+          },
         ];
-        let isTyping = false;
-        let input = '';
-        let conversations = [];
-        let currentConversationId = null;
-        let viewingHistoryId = null;
-        let sidebarOpen = true;
+        render();
+      }
 
-        const quickActions = [
-            { text: 'Quero cozinhar algo', icon: '👨‍🍳', color: 'from-orange-400 to-red-500' },
-            { text: 'Mostrar favoritos', icon: '❤️', color: 'from-pink-400 to-rose-500' },
-            { text: 'Receitas recentes', icon: '🕐', color: 'from-blue-400 to-indigo-500' },
-        ];
+      function saveCurrentConversation() {
+        if (!currentConversationId || messages.length <= 1 || viewingHistoryId)
+          return;
 
-        // ===== GESTÃO DE CONVERSAS =====
-        function loadConversations() {
-            const saved = localStorage.getItem('chefbot_conversations');
-            if (saved) {
-                conversations = JSON.parse(saved);
-            }
+        const existingIndex = conversations.findIndex(
+          (c) => c.id === currentConversationId
+        );
+
+        const conversationData = {
+          id: currentConversationId,
+          title: generateConversationTitle(),
+          messages: messages,
+          lastUpdate: new Date().toISOString(),
+        };
+
+        if (existingIndex >= 0) {
+          conversations[existingIndex] = conversationData;
+        } else {
+          conversations.unshift(conversationData);
         }
 
-        function saveConversations() {
-            localStorage.setItem('chefbot_conversations', JSON.stringify(conversations));
+        // Limitar a 50 conversas
+        if (conversations.length > 50) {
+          conversations = conversations.slice(0, 50);
         }
 
-        function createNewConversation() {
-            viewingHistoryId = null;
-            currentConversationId = Date.now().toString();
-            messages = [
-                {
-                    type: 'bot',
-                    text: 'Olá! Bem-vindo ao Assistente de Receitas! 👨‍🍳',
-                    timestamp: new Date()
-                }
-            ];
-            render();
+        saveConversations();
+      }
+
+      function generateConversationTitle() {
+        const userMessages = messages.filter((m) => m.type === "user");
+        if (userMessages.length > 0) {
+          const firstMsg = userMessages[0].text;
+          return firstMsg.length > 30
+            ? firstMsg.substring(0, 30) + "..."
+            : firstMsg;
         }
+        return "Nova Conversa";
+      }
 
-        function saveCurrentConversation() {
-            if (!currentConversationId || messages.length <= 1 || viewingHistoryId) return;
-
-            const existingIndex = conversations.findIndex(c => c.id === currentConversationId);
-            
-            const conversationData = {
-                id: currentConversationId,
-                title: generateConversationTitle(),
-                messages: messages,
-                lastUpdate: new Date().toISOString()
-            };
-
-            if (existingIndex >= 0) {
-                conversations[existingIndex] = conversationData;
-            } else {
-                conversations.unshift(conversationData);
-            }
-
-            // Limitar a 50 conversas
-            if (conversations.length > 50) {
-                conversations = conversations.slice(0, 50);
-            }
-
-            saveConversations();
+      function loadConversation(id) {
+        const conv = conversations.find((c) => c.id === id);
+        if (conv) {
+          viewingHistoryId = id;
+          messages = conv.messages.map((m) => ({
+            ...m,
+            timestamp: new Date(m.timestamp),
+          }));
+          render();
         }
+      }
 
-        function generateConversationTitle() {
-            const userMessages = messages.filter(m => m.type === 'user');
-            if (userMessages.length > 0) {
-                const firstMsg = userMessages[0].text;
-                return firstMsg.length > 30 ? firstMsg.substring(0, 30) + '...' : firstMsg;
-            }
-            return 'Nova Conversa';
+      function deleteConversation(id) {
+        conversations = conversations.filter((c) => c.id !== id);
+        saveConversations();
+
+        if (viewingHistoryId === id) {
+          createNewConversation();
+        } else {
+          render();
         }
+      }
 
-        function loadConversation(id) {
-            const conv = conversations.find(c => c.id === id);
-            if (conv) {
-                viewingHistoryId = id;
-                messages = conv.messages.map(m => ({
-                    ...m,
-                    timestamp: new Date(m.timestamp)
-                }));
-                render();
-            }
-        }
+      function toggleSidebar() {
+        sidebarOpen = !sidebarOpen;
+        render();
+      }
 
-        function deleteConversation(id) {
-            conversations = conversations.filter(c => c.id !== id);
-            saveConversations();
-            
-            if (viewingHistoryId === id) {
-                createNewConversation();
-            } else {
-                render();
-            }
-        }
+      // ===== RENDER =====
+      function render() {
+        const app = document.getElementById("app");
+        const isViewingHistory = viewingHistoryId !== null;
 
-        function toggleSidebar() {
-            sidebarOpen = !sidebarOpen;
-            render();
-        }
-
-        // ===== RENDER =====
-        function render() {
-            const app = document.getElementById('app');
-            const isViewingHistory = viewingHistoryId !== null;
-            
-            app.innerHTML = `
+        app.innerHTML = `
                 <!-- Sidebar -->
-                <div class="sidebar ${sidebarOpen ? '' : 'sidebar-hidden'} w-80 bg-white border-r border-gray-200 flex flex-col shadow-lg">
+                <div class="sidebar ${
+                  sidebarOpen ? "" : "sidebar-hidden"
+                } w-80 bg-white border-r border-gray-200 flex flex-col shadow-lg">
                     <!-- Sidebar Header -->
                     <div class="bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-4">
                         <div class="flex items-center justify-between mb-3">
@@ -192,38 +221,51 @@
 
                     <!-- Conversations List -->
                     <div class="flex-1 overflow-y-auto p-3">
-                        ${conversations.length === 0 ? `
+                        ${
+                          conversations.length === 0
+                            ? `
                             <div class="text-center text-gray-400 mt-8">
                                 <span class="text-4xl block mb-2">💬</span>
                                 <p class="text-sm">Nenhuma conversa guardada</p>
                             </div>
-                        ` : conversations.map(conv => `
+                        `
+                            : conversations
+                                .map(
+                                  (conv) => `
                             <div class="mb-2 group">
                                 <div
                                     class="p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                                        viewingHistoryId === conv.id 
-                                            ? 'bg-orange-100 border-2 border-orange-400' 
-                                            : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                                      viewingHistoryId === conv.id
+                                        ? "bg-orange-100 border-2 border-orange-400"
+                                        : "bg-gray-50 hover:bg-gray-100 border-2 border-transparent"
                                     }"
                                     onclick="loadConversation('${conv.id}')"
                                 >
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-800 truncate">${conv.title}</p>
+                                            <p class="text-sm font-medium text-gray-800 truncate">${
+                                              conv.title
+                                            }</p>
                                             <p class="text-xs text-gray-500 mt-1">
-                                                ${new Date(conv.lastUpdate).toLocaleDateString('pt-PT', { 
-                                                    day: '2-digit', 
-                                                    month: 'short',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
+                                                ${new Date(
+                                                  conv.lastUpdate
+                                                ).toLocaleDateString("pt-PT", {
+                                                  day: "2-digit",
+                                                  month: "short",
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
                                                 })}
                                             </p>
                                             <p class="text-xs text-gray-400 mt-1">
-                                                ${conv.messages.length} mensagens
+                                                ${
+                                                  conv.messages.length
+                                                } mensagens
                                             </p>
                                         </div>
                                         <button
-                                            onclick="event.stopPropagation(); deleteConversation('${conv.id}')"
+                                            onclick="event.stopPropagation(); deleteConversation('${
+                                              conv.id
+                                            }')"
                                             class="opacity-0 group-hover:opacity-100 ml-2 p-1 text-red-500 hover:bg-red-100 rounded transition-all duration-200"
                                             title="Apagar conversa"
                                         >
@@ -232,13 +274,18 @@
                                     </div>
                                 </div>
                             </div>
-                        `).join('')}
+                        `
+                                )
+                                .join("")
+                        }
                     </div>
 
                     <!-- Sidebar Footer -->
                     <div class="p-3 border-t border-gray-200 bg-gray-50">
                         <p class="text-xs text-gray-500 text-center">
-                            ${conversations.length} ${conversations.length === 1 ? 'conversa' : 'conversas'} guardada${conversations.length === 1 ? '' : 's'}
+                            ${conversations.length} ${
+          conversations.length === 1 ? "conversa" : "conversas"
+        } guardada${conversations.length === 1 ? "" : "s"}
                         </p>
                     </div>
                 </div>
@@ -258,22 +305,30 @@
                                 <div>
                                     <h1 class="text-2xl font-bold">ChefBot</h1>
                                     <p class="text-sm text-orange-100">
-                                        ${isViewingHistory ? '📖 A visualizar conversa antiga' : 'Assistente de Receitas Inteligente'}
+                                        ${
+                                          isViewingHistory
+                                            ? "📖 A visualizar conversa antiga"
+                                            : "Assistente de Receitas Inteligente"
+                                        }
                                     </p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                ${isViewingHistory ? `
+                                ${
+                                  isViewingHistory
+                                    ? `
                                     <button
                                         onclick="createNewConversation()"
                                         class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm transition-all"
                                     >
                                         Nova Conversa
                                     </button>
-                                ` : `
+                                `
+                                    : `
                                     <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                                     <span class="text-sm">Online</span>
-                                `}
+                                `
+                                }
                             </div>
                         </div>
                     </div>
@@ -281,7 +336,9 @@
                     <!-- Messages Area -->
                     <div class="flex-1 overflow-y-auto px-4 py-6" id="messagesArea">
                         <div class="max-w-4xl mx-auto">
-                            ${messages.length === 1 && !isViewingHistory ? `
+                            ${
+                              messages.length === 1 && !isViewingHistory
+                                ? `
                                 <div class="text-center mb-8">
                                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full mb-4 shadow-xl">
                                         <span class="text-4xl">✨</span>
@@ -290,7 +347,9 @@
                                     <p class="text-gray-600 mb-6">Escolhe uma opção ou escreve a tua pergunta</p>
                                     
                                     <div class="flex flex-wrap gap-3 justify-center">
-                                        ${quickActions.map(action => `
+                                        ${quickActions
+                                          .map(
+                                            (action) => `
                                             <button
                                                 onclick="sendMessage('${action.text}')"
                                                 class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${action.color} text-white rounded-full shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-medium cursor-pointer"
@@ -298,14 +357,23 @@
                                                 <span>${action.icon}</span>
                                                 ${action.text}
                                             </button>
-                                        `).join('')}
+                                        `
+                                          )
+                                          .join("")}
                                     </div>
                                 </div>
-                            ` : ''}
+                            `
+                                : ""
+                            }
 
-                            ${messages.map((message, index) => renderMessage(message, index)).join('')}
-                            
-                            ${isTyping ? `
+                            ${messages
+                              .map((message, index) =>
+                                renderMessage(message, index)
+                              )
+                              .join("")}
+                            ${
+                              isTyping
+                                ? `
                                 <div class="flex justify-start mb-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg">
@@ -320,18 +388,23 @@
                                         </div>
                                     </div>
                                 </div>
-                            ` : ''}
+                            `
+                                : ""
+                            }
                         </div>
                     </div>
 
                     <!-- Input Area -->
                     <div class="bg-white border-t border-gray-200 px-4 py-4 shadow-lg">
                         <div class="max-w-4xl mx-auto">
-                            ${isViewingHistory ? `
+                            ${
+                              isViewingHistory
+                                ? `
                                 <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 text-center">
                                     <span class="text-yellow-700 font-medium">📖 Estás a visualizar uma conversa antiga (apenas leitura)</span>
                                 </div>
-                            ` : `
+                            `
+                                : `
                                 <div class="flex gap-3 items-center">
                                     <div class="flex-1 relative">
                                         <input
@@ -353,156 +426,189 @@
                                 <p class="text-xs text-gray-500 text-center mt-2">
                                     Pressiona Enter para enviar • Powered by Rasa
                                 </p>
-                            `}
+                            `
+                            }
                         </div>
                     </div>
                 </div>
             `;
 
-            // Event listeners
-            if (!isViewingHistory) {
-                const inputEl = document.getElementById('messageInput');
-                if (inputEl) {
-                    inputEl.addEventListener('input', (e) => {
-                        input = e.target.value;
-                    });
-                    inputEl.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            sendMessageFromInput();
-                        }
-                    });
-                    inputEl.focus();
+        // Auto scroll
+        setTimeout(() => {
+          const messagesArea = document.getElementById("messagesArea");
+          if (messagesArea) {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+          }
+        }, 0);
+
+        // Event listeners (deferred to prevent race conditions)
+        if (!isViewingHistory) {
+          setTimeout(() => {
+            const inputEl = document.getElementById("messageInput");
+            if (inputEl) {
+              inputEl.addEventListener("input", (e) => {
+                input = e.target.value;
+              });
+              inputEl.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                  sendMessageFromInput();
                 }
+              });
+              inputEl.focus();
             }
-
-            // Auto scroll
-            setTimeout(() => {
-                const messagesArea = document.getElementById('messagesArea');
-                if (messagesArea) {
-                    messagesArea.scrollTop = messagesArea.scrollHeight;
-                }
-            }, 100);
+          }, 0);
         }
+      }
 
-        function renderMessage(message, index) {
-            const isBot = message.type === 'bot';
-            const formattedText = formatText(message.text);
-            const isViewingHistory = viewingHistoryId !== null;
-            
-            return `
-                <div class="flex ${isBot ? 'justify-start' : 'justify-end'} mb-4 animate-fadeIn">
-                    <div class="flex max-w-[80%] ${isBot ? 'flex-row' : 'flex-row-reverse'}">
-                        <div class="flex-shrink-0 ${isBot ? 'mr-3' : 'ml-3'}">
+      function renderMessage(message, index) {
+        const isBot = message.type === "bot";
+        const formattedText = formatText(message.text);
+        const isViewingHistory = viewingHistoryId !== null;
+
+        return `
+                <div class="flex ${isBot ? "justify-start" : "justify-end"} ${
+          index + 1 === messages.length ? "animate-fadeIn" : ""
+        } mb-4">
+                    <div class="flex max-w-[80%] ${
+                      isBot ? "flex-row" : "flex-row-reverse"
+                    }">
+                        <div class="flex-shrink-0 ${isBot ? "mr-3" : "ml-3"}">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center ${
-                                isBot ? 'bg-gradient-to-br from-orange-400 to-red-500' : 'bg-gradient-to-br from-blue-500 to-purple-600'
+                              isBot
+                                ? "bg-gradient-to-br from-orange-400 to-red-500"
+                                : "bg-gradient-to-br from-blue-500 to-purple-600"
                             } shadow-lg">
-                                ${isBot ? '<span class="text-xl">👨‍🍳</span>' : '<span class="text-white font-bold">U</span>'}
+                                ${
+                                  isBot
+                                    ? '<span class="text-xl">👨‍🍳</span>'
+                                    : '<span class="text-white font-bold">U</span>'
+                                }
                             </div>
                         </div>
 
                         <div class="flex flex-col">
                             <div class="rounded-2xl px-4 py-3 shadow-md ${
-                                isBot 
-                                    ? 'bg-white border border-gray-200' 
-                                    : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                              isBot
+                                ? "bg-white border border-gray-200"
+                                : "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
                             }">
                                 <div class="whitespace-pre-wrap break-words">
                                     ${formattedText}
                                 </div>
                             </div>
 
-                            ${message.buttons && message.buttons.length > 0 && !isViewingHistory ? `
+                            ${
+                              message.buttons &&
+                              message.buttons.length > 0 &&
+                              !isViewingHistory
+                                ? `
                                 <div class="flex flex-wrap gap-2 mt-3">
-                                    ${message.buttons.map((button, btnIndex) => `
+                                    ${message.buttons
+                                      .map(
+                                        (button, btnIndex) => `
                                         <button
-                                            onclick="handleButtonClick(decodeURIComponent('${encodeURIComponent(button.payload)}'))"
+                                            onclick="handleButtonClick(decodeURIComponent('${encodeURIComponent(
+                                              button.payload
+                                            )}'))"
                                             class="px-4 py-2 bg-white border-2 border-orange-400 text-orange-600 rounded-full hover:bg-orange-400 hover:text-white transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105 cursor-pointer"
                                         >
                                             ${button.title}
                                         </button>
-                                    `).join('')}
+                                    `
+                                      )
+                                      .join("")}
                                 </div>
-                            ` : ''}
+                            `
+                                : ""
+                            }
 
-                            <span class="text-xs text-gray-400 mt-1 ${isBot ? 'text-left' : 'text-right'}">
-                                ${message.timestamp.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                            <span class="text-xs text-gray-400 mt-1 ${
+                              isBot ? "text-left" : "text-right"
+                            }">
+                                ${message.timestamp.toLocaleTimeString(
+                                  "pt-PT",
+                                  { hour: "2-digit", minute: "2-digit" }
+                                )}
                             </span>
                         </div>
                     </div>
                 </div>
             `;
-        }
+      }
 
-        function formatText(text) {
-            return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
-        }
+      function formatText(text) {
+        return text.replace(
+          /\*\*(.*?)\*\*/g,
+          '<strong class="font-bold">$1</strong>'
+        );
+      }
 
-        async function sendMessage(text) {
-            if (!text.trim() || viewingHistoryId) return;
+      async function sendMessage(text) {
+        if (!text.trim() || viewingHistoryId) return;
 
-            messages.push({
-                type: 'user',
-                text: text,
-                timestamp: new Date()
+        messages.push({
+          type: "user",
+          text: text,
+          timestamp: new Date(),
+        });
+        input = "";
+        isTyping = true;
+        render();
+
+        try {
+          const response = await fetch(RASA_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              sender: "user",
+              message: text,
+            }),
+          });
+
+          const data = await response.json();
+          isTyping = false;
+
+          if (data && data.length > 0) {
+            data.forEach((msg) => {
+              messages.push({
+                type: "bot",
+                text: msg.text,
+                buttons: msg.buttons,
+                timestamp: new Date(),
+              });
             });
-            input = '';
-            isTyping = true;
-            render();
+          }
 
-            try {
-                const response = await fetch(RASA_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        sender: 'user',
-                        message: text
-                    })
-                });
-
-                const data = await response.json();
-                isTyping = false;
-
-                if (data && data.length > 0) {
-                    data.forEach(msg => {
-                        messages.push({
-                            type: 'bot',
-                            text: msg.text,
-                            buttons: msg.buttons,
-                            timestamp: new Date()
-                        });
-                    });
-                }
-                
-                saveCurrentConversation();
-                render();
-            } catch (error) {
-                isTyping = false;
-                messages.push({
-                    type: 'bot',
-                    text: '❌ Erro ao conectar com o servidor. Certifica-te que o Rasa está a correr em localhost:5005',
-                    timestamp: new Date()
-                });
-                render();
-                console.error('Erro:', error);
-            }
+          saveCurrentConversation();
+          render();
+        } catch (error) {
+          isTyping = false;
+          messages.push({
+            type: "bot",
+            text: "❌ Erro ao conectar com o servidor. Certifica-te que o Rasa está a correr em localhost:5005",
+            timestamp: new Date(),
+          });
+          render();
+          console.error("Erro:", error);
         }
+      }
 
-        function sendMessageFromInput() {
-            const text = input.trim();
-            if (text) {
-                sendMessage(text);
-            }
+      function sendMessageFromInput() {
+        const text = input.trim();
+        if (text) {
+          sendMessage(text);
         }
+      }
 
-        function handleButtonClick(payload) {
-            sendMessage(payload);
-        }
+      function handleButtonClick(payload) {
+        sendMessage(payload);
+      }
 
-        // Initialize
-        loadConversations();
-        createNewConversation();
+      // Initialize
+      loadConversations();
+      createNewConversation();
     </script>
-</body>
+  </body>
 </html>
