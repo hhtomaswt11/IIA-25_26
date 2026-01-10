@@ -49,24 +49,31 @@ nlu:
 
 - intent: escolher_tempo
   examples: |
-    - [ate 30 minutos](tempo)
-    - [ate 30 min](tempo)
+    - [ate 30 minutos](tempo:ate_30min)
+    - [ate 30 min](tempo:ate_30min)
     - [menos de 30 minutos](tempo:ate_30min)
+    - [ate 30](tempo:ate_30min)
+    - [menos de 30](tempo:ate_30min)
     - [30 a 60 minutos](tempo:30_60min)
     - [entre 30 e 60 minutos](tempo:30_60min)
+    - [30 60 minutos](tempo:30_60min)
+    - [entre 30 e 60](tempo:30_60min)
+    - [30min a 60min](tempo:30_60min)
+    - [30 60](tempo:30_60min)
     - [mais de 1 hora](tempo:mais_1h)
     - [mais de uma hora](tempo:mais_1h)
+    - [mais de 1h](tempo:mais_1h)
+    - [mais de 60 minutos](tempo:mais_1h)
+    - [mais de 60min](tempo:mais_1h)
     - [tanto faz](tempo:tanto_faz)
+    - [qualquer tempo](tempo:tanto_faz)
     - não importa o tempo
     - tenho [pouco tempo](tempo:ate_30min)
     - tenho [tempo](tempo:tanto_faz)
     - algo [rápido](tempo:ate_30min)
     - [30min](tempo:ate_30min)
     - [1 hora](tempo:30_60min)
-    - [entre 30 minutos e 60 minutos](tempo:30_60min) 
-    - [entre 30 e 60 ](tempo:30_60min)
-    - [mais de 1h](tempo:mais_1h)
-    - [menos de 30](tempo:ate_30min)
+    - [rapido](tempo:ate_30min)
 
 - intent: escolher_dificuldade
   examples: |
@@ -95,12 +102,11 @@ nlu:
     - [sem açucar](restricao:sem_acucar)
     - [sem ovo](restricao:sem_ovo)
     - [sem ovos](restricao:sem_ovo)
-    - [nenhuma](restricao)
-    - [nenhum](restricao)
-    - [nada](restricao)
-    - não tenho restrições
-    - sem restrições
-    - como de tudo
+    - [nenhuma](restricao:nenhuma)
+    - [nenhum](restricao:nenhuma)
+    - [nada](restricao:nenhuma)
+    - [não tenho restrições](restricao:nenhuma)
+    - [sem restrições](restricao:nenhuma)
     - tenho intolerância a [lactose](restricao:sem_lactose)
     - alergia ao [glúten](restricao:sem_gluten)
     - não como carne, [vegetariano](restricao)
@@ -318,7 +324,7 @@ nlu:
     - avalio com [4](avaliacao_utilizador)
     - avalio com [5](avaliacao_utilizador)
 
-    
+
 - intent: nao_avaliar
   examples: |
     - não avaliar
