@@ -40,15 +40,17 @@ nlu:
   examples: |
     - quero uma [entrada](categoria)
     - quero fazer uma [sobremesa](categoria)
-    - um [lanche](categoria) rápido
     - qualquer [prato principal](categoria)
-    - uma [entrada](categoria) leve
     - quero uma [sobremesa](categoria)
     - quero um [prato principal](categoria)
+    - [entrada](categoria) 
+    - [prato principal](categoria)
+    - [sobremesa](categoria)
 
 - intent: escolher_tempo
   examples: |
     - [ate 30 minutos](tempo)
+    - [ate 30 min](tempo)
     - [menos de 30 minutos](tempo:ate_30min)
     - [30 a 60 minutos](tempo:30_60min)
     - [entre 30 e 60 minutos](tempo:30_60min)
@@ -133,8 +135,6 @@ nlu:
     - [sem restrição](preferencia_calorica:sem_restricao)
     - não importa as calorias
 
-
-
 - intent: ver_receita
   examples: |
     - ver a receita [1](numero_receita)
@@ -156,10 +156,6 @@ nlu:
     - mostrar receita [3](numero_receita)
     - mostrar receita [2](numero_receita)
    
-
-
-    
-
 - intent: nova_busca
   examples: |
     - nova busca
@@ -238,9 +234,6 @@ nlu:
     - tenho [atum](ingrediente_possuido). O que posso fazer?
     - com [atum](ingrediente_possuido), o que posso fazer?
 
-
-
-
 - intent: comecar
   examples: |
     - começar
@@ -282,8 +275,6 @@ nlu:
     - cancelar receita
     - sair do modo a passo
 
-
-
 - intent: regressar_passo
   examples: |
     - regressar
@@ -298,10 +289,6 @@ nlu:
     - acabei
     - concluir receita
     - finalizar receita
-
-
-
-
 
 - intent: dar_avaliacao
   examples: |
@@ -327,7 +314,6 @@ nlu:
     - quatro estrelas 
     - cinco estrelas
 
-
 - intent: nao_avaliar
   examples: |
     - não avaliar
@@ -338,19 +324,18 @@ nlu:
 - intent: favoritar_sim
   examples: |
     - sim quero guardar 
-    - sim quero
     - guardar
     - adicionar aos favoritos
     - guardar por favor 
-
+    - sim guarda nos favoritos 
+    - guardar nos favoritos 
+ 
 - intent: favoritar_nao
   examples: |
     - não
     - nao
     - não quero
     - agora não
-
-
 
 - intent: remover_sim
   examples: |
@@ -364,8 +349,6 @@ nlu:
     - nao
     - deixa
     - manter
-
-
 
 - intent: recentes_por_categoria
   examples: |
@@ -385,7 +368,6 @@ nlu:
     - filtrar receitas favoritas por categoria 
     - filtrar favoritas por categoria 
 
-
 - intent: listar_recentes
   examples: |
     - lista as minhas receitas mais recentes
@@ -397,9 +379,6 @@ nlu:
     - mostrar recentes 
     - receitas recentes 
 
-
-
-
 - intent: listar_favoritos
   examples: |
     - mostra as minhas receitas favoritas
@@ -408,23 +387,59 @@ nlu:
     - favoritos
     - mostrar favoritos 
 
-
-
-
-
 - intent: recentes_filtrar_categoria
   examples: |
     - recentes de [entrada](categoria)
     - mostra recentes de [sobremesa](categoria)
-    - recentes de [prato_principal](categoria)
+    - recentes de [prato principal](categoria)
     - filtrar recentes por [entrada](categoria)
     - recentes de [sobremesa](categoria)
+    - mostra recentes de [prato principal](categoria)
+    - mostra recentes de [entrada](categoria)
     - mostra receitas recentes de [sobremesa](categoria)
-    - mostra receitas recentes de [prato_principal](categoria)
+    - mostra receitas recentes de [prato principal](categoria)
+    - ver [entrada](categoria) recentes 
+    - ver [prato principal](categoria) recentes 
+    - ver [sobremesa](categoria) recentes 
+    - ver [entrada](categoria) feitas recentemente  
+    - ver [prato principal](categoria) feitos recentemente  
+    - ver [sobremesa](categoria) feitas recentemente 
+    - ver recentes de [entrada](categoria)
+    - ver recentes de [prato principal](categoria)
+    - ver recentes de [sobremesa](categoria)
+    - receitas recentes de [entrada](categoria)
+    - receitas recentes de [prato principal](categoria)
+    - receitas recentes de [sobremesa](categoria)
+
+
+
+- intent: favoritos_filtrar_categoria
+  examples: |
+    - favoritos de [entrada](categoria)
+    - mostra favoritos de [sobremesa](categoria)
+    - favoritos de [prato principal](categoria)
+    - filtrar favoritos por [entrada](categoria)
+    - favoritos de [sobremesa](categoria)
+    - mostra receitas favoritos de [sobremesa](categoria)
+    - mostra receitas favoritos de [prato principal](categoria)
+    - ver [entrada](categoria) favoritos 
+    - ver [prato principal](categoria) favoritos 
+    - ver [sobremesa](categoria) favoritos 
+    - ver [entrada](categoria) feitas recentemente  
+    - ver [prato principal](categoria) feitos recentemente  
+    - ver [sobremesa](categoria) feitas recentemente 
+    - ver favoritos de [entrada](categoria)
+    - ver favoritos de [prato principal](categoria)
+    - ver favoritos de [sobremesa](categoria)
+    - receitas favoritos de [entrada](categoria)
+    - receitas favoritos de [prato principal](categoria)
+    - receitas favoritos de [sobremesa](categoria)
+
+
+
+
+
         
-
-
-
 - intent: quero_cozinhar_receita_especifica
   examples: |
     - quero cozinhar [creme de abóbora](nome_receita)
@@ -482,10 +497,6 @@ nlu:
     - mostra me receitas com [massa](nome_receita)
     - mostra me receitas com [frango](nome_receita)
 
-
-
-
-
 - intent: recentes_ver_todas
   examples: |
     - ver todas as receitas recentes
@@ -494,10 +505,7 @@ nlu:
     - mostrar todas as recentes 
     - mostrar todas as receitas recentes 
 
-- intent: listar_favoritos
-  examples: |
-    - ver todas as receitas favoritas 
-    - ver todas as favoritas
-    - todos os favoritos
-    - mostrar todas as favoritas 
-    - mostrar todas as receitas favoritas 
+
+
+
+

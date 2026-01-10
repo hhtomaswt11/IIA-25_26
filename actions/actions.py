@@ -187,11 +187,6 @@ def _receita_para_linha_csv(receita: Dict[str, Any], avaliacao_utilizador: Any):
         "avaliacao_utilizador": "" if avaliacao_utilizador is None else str(avaliacao_utilizador),
     }
 
-
-
-
-
-
 class ActionBuscarReceitas(Action):
     def name(self) -> Text:
         return "action_buscar_receitas"
@@ -215,8 +210,6 @@ class ActionBuscarReceitas(Action):
             return [SlotSet("receitas_encontradas", [])]
 
         receitas_filtradas = todas_receitas.copy()
-
-        # --- LÓGICA DE FILTROS ---
 
         # 1. Categoria
         if categoria:
@@ -438,13 +431,6 @@ class ActionResetSlots(Action):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         return [AllSlotsReset()]
     
-
-
-
-
-
-
-
 class ActionIniciarModoPasso(Action):
     def name(self) -> Text:
         return "action_iniciar_modo_passo"
@@ -466,7 +452,6 @@ class ActionIniciarModoPasso(Action):
             SlotSet("modo_passo", True),
             SlotSet("passo_atual", 1),  # já prepara o passo 1
         ]
-
 
 class ActionMostrarIngredientesDaReceita(Action):
     def name(self) -> Text:
@@ -494,7 +479,6 @@ class ActionMostrarIngredientesDaReceita(Action):
         ]
         dispatcher.utter_message(text=msg, buttons=bts)
         return []
-
 
 class ActionMostrarPassoAtual(Action):
     def name(self) -> Text:
@@ -525,9 +509,6 @@ class ActionMostrarPassoAtual(Action):
 
         buttons = []
 
-        # Próximo (sempre)
-        # buttons.append({"title": "➡️ Próximo Passo", "payload": "/proximo_passo"})
-        
         # Próximo (só se NÃO for o último)
         if passo_atual < total:
             buttons.append({"title": "➡️ Próximo Passo", "payload": "/proximo_passo"})
@@ -566,8 +547,6 @@ class ActionProximoPasso(Action):
             FollowupAction("action_mostrar_passo_atual"),
         ]
 
-
-
 class ActionAbandonarReceita(Action):
     def name(self) -> Text:
         return "action_abandonar_receita"
@@ -582,7 +561,6 @@ class ActionAbandonarReceita(Action):
         )
         return [SlotSet("modo_passo", False), SlotSet("passo_atual", 0)]
 
-
 class ActionRegressarPasso(Action):
     def name(self) -> Text:
         return "action_regressar_passo"
@@ -596,9 +574,6 @@ class ActionRegressarPasso(Action):
             SlotSet("passo_atual", passo_atual),
             FollowupAction("action_mostrar_passo_atual"),
         ]
-
-
-
 
 class ActionPerguntarAvaliacao(Action):
     def name(self) -> Text:
@@ -622,7 +597,6 @@ class ActionPerguntarAvaliacao(Action):
         dispatcher.utter_message(text=msg, buttons=bts)
         return []
 
-
 class ActionRegistarRecenteEPerguntarFavoritos(Action):
     def name(self) -> Text:
         return "action_registar_recente_e_perguntar_favoritos"
@@ -641,7 +615,6 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
                 if ent.get("entity") == "avaliacao_utilizador":
                     avaliacao = ent.get("value")
                     break
-
         # Garantir que escreve como número (e não dict/string estranho)
         try:
             if avaliacao is not None:
@@ -698,9 +671,6 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
 
         return []
 
-
-
-
 class ActionGuardarFavoritosCSV(Action):
     def name(self) -> Text:
         return "action_guardar_favoritos_csv"
@@ -740,8 +710,6 @@ class ActionGuardarFavoritosCSV(Action):
         dispatcher.utter_message(text="Feito ✅ Guardei nos teus favoritos!")
         return []
 
-
-
 class ActionRemoverFavoritosCSV(Action):
     def name(self) -> Text:
         return "action_remover_favoritos_csv"
@@ -752,10 +720,8 @@ class ActionRemoverFavoritosCSV(Action):
             dispatcher.utter_message(response="utter_sem_receita_selecionada")
             return []
 
-   
         rid = receita.get("id", "")
         ok = _remover_dos_favoritos(rid)
-
 
         if ok:
             dispatcher.utter_message(text="Feito ✅ Removi dos teus favoritos!")
@@ -763,19 +729,6 @@ class ActionRemoverFavoritosCSV(Action):
             dispatcher.utter_message(text="Não encontrei essa receita nos favoritos 🙂")
 
         return []
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def _ler_csv_dicts(caminho: str) -> List[Dict[str, Any]]:
     if not os.path.exists(caminho):
@@ -832,10 +785,6 @@ class ActionMostrarRecentesResumo(Action):
 
         
         return []
-
-
-
-
 
 class ActionMostrarRecentesTodas(Action):
     def name(self) -> Text:
@@ -905,9 +854,6 @@ class ActionMostrarRecentesTodas(Action):
         # ✅ CRÍTICO: Guardar no slot para /ver_receita funcionar
         return [SlotSet("receitas_encontradas", recentes_receitas)]
     
-    
-    
-    
 class ActionMostrarRecentesPorCategoria(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_por_categoria"
@@ -940,11 +886,10 @@ class ActionMostrarRecentesPorCategoria(Action):
                 {"title": f"Entrada ({count_entrada})", "payload": '/recentes_filtrar_categoria{"categoria":"entrada"}'},
                 {"title": f"Prato Principal ({count_prato_principal})", "payload": '/recentes_filtrar_categoria{"categoria":"prato_principal"}'},
                 {"title": f"Sobremesa ({count_sobremesa})", "payload": '/recentes_filtrar_categoria{"categoria":"sobremesa"}'},
-                {"title": "⬅️ Voltar", "payload": "/listar_recentes"},
+                {"title": "⬅️ Listar recentes", "payload": "/listar_recentes"},  # ALTERADO
             ],
         )
         return []
-
 
 class ActionMostrarRecentesFiltradosPorCategoria(Action):
     def name(self) -> Text:
@@ -980,7 +925,7 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
         if not filtradas_rows:
             dispatcher.utter_message(
                 text=f"Não tens receitas recentes na categoria **{nome_cat}** 🙂",
-                buttons=[{"title": "⬅️ Voltar", "payload": "/recentes_por_categoria"}],
+                buttons=[{"title": "⬅️ Por categoria", "payload": "/recentes_por_categoria"}],
             )
             return []
 
@@ -1000,7 +945,7 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
         if not receitas:
             dispatcher.utter_message(
                 text=f"Tens registos recentes em **{nome_cat}**, mas não consegui encontrá-los no recipes.csv 😕",
-                buttons=[{"title": "⬅️ Voltar", "payload": "/recentes_por_categoria"}],
+                buttons=[{"title": "⬅️ Por categoria", "payload": "/recentes_por_categoria"}],
             )
             return []
 
@@ -1028,15 +973,15 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
                 "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
             })
 
-        buttons.append({"title": "⬅️ Voltar", "payload": "/recentes_por_categoria"})
+        # ALTERAÇÃO AQUI: Mudar "Voltar" para "Por categoria"
+        buttons.append({"title": "⬅️ Por categoria", "payload": "/recentes_por_categoria"})
         buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
         # ✅ guardar para o /ver_receita continuar a funcionar como sempre
         return [SlotSet("receitas_encontradas", receitas)]
-
-
+    
 class ActionMostrarFavoritosLista(Action):
     def name(self) -> Text:
         return "action_mostrar_favoritos_lista"
@@ -1098,8 +1043,6 @@ class ActionMostrarFavoritosLista(Action):
         # ✅ IMPORTANTÍSSIMO: guardar no slot para o fluxo /ver_receita funcionar igual
         return [SlotSet("receitas_encontradas", favoritos_receitas)]
 
-
-
 class ActionMostrarFavoritosPorCategoria(Action):
     def name(self) -> Text:
         return "action_mostrar_favoritos_por_categoria"
@@ -1133,14 +1076,10 @@ class ActionMostrarFavoritosPorCategoria(Action):
                 {"title": f"Entrada ({count_entrada})", "payload": '/favoritos_filtrar_categoria{"categoria":"entrada"}'},
                 {"title": f"Prato Principal ({count_prato_principal})", "payload": '/favoritos_filtrar_categoria{"categoria":"prato_principal"}'},
                 {"title": f"Sobremesa ({count_sobremesa})", "payload": '/favoritos_filtrar_categoria{"categoria":"sobremesa"}'},
-                {"title": "⬅️ Voltar", "payload": "/listar_favoritos"},
+                {"title": "⬅️ Listar favoritos", "payload": "/listar_favoritos"},  # ALTERADO
             ],
         )
         return []
-
-
-
-
 
 class ActionMostrarFavoritosFiltradosPorCategoria(Action):
     def name(self) -> Text:
@@ -1194,7 +1133,7 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
         if not filtradas:
             dispatcher.utter_message(
                 text=f"Não tens receitas favoritas na categoria **{nome_cat}** 🙂",
-                buttons=[{"title": "⬅️ Voltar", "payload": "/favoritos_por_categoria"}],
+                buttons=[{"title": "⬅️ Por categoria", "payload": "/favoritos_por_categoria"}],
             )
             return []
 
@@ -1220,17 +1159,15 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
                 "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
             })
 
-        buttons.append({"title": "⬅️ Voltar", "payload": "/favoritos_por_categoria"})
+        # ALTERAÇÃO AQUI: Mudar "Voltar" para "Por categoria"
+        buttons.append({"title": "⬅️ Por categoria", "payload": "/favoritos_por_categoria"})
         buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
         # IMPORTANTÍSSIMO: guardar para o /ver_receita funcionar como sempre
         return [SlotSet("receitas_encontradas", filtradas)]
-
-
-
-
+    
 class ActionBuscarPorNome(Action):
     def name(self) -> Text:
         return "action_buscar_por_nome"
@@ -1322,9 +1259,5 @@ class ActionBuscarPorNome(Action):
             SlotSet("receitas_encontradas", top_receitas),
             FollowupAction("action_mostrar_receitas")
         ]
-
-
-
-
 
 
