@@ -785,17 +785,18 @@ class ActionMostrarRecentesResumo(Action):
 
         
         return []
-
+    
+    
 class ActionMostrarRecentesTodas(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_todas"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]):
         rows = _ler_csv_dicts("recentes.csv")
-        if not rows:
+        if not rows:      
             dispatcher.utter_message(
                 text="Ainda não tenho receitas recentes registadas 🙂",
-                buttons=[{"title": "⬅️ Voltar", "payload": "/listar_recentes"}],
+                buttons=[{"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"}],  # ALTERADO
             )
             return []
 
@@ -845,8 +846,8 @@ class ActionMostrarRecentesTodas(Action):
                 "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
             })
 
-        # Botões de navegação
-        buttons.append({"title": "⬅️ Voltar", "payload": "/listar_recentes"})
+        # Botões de navegação - ALTERAÇÃO AQUI
+        buttons.append({"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"})  # ALTERADO
         buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
@@ -854,6 +855,7 @@ class ActionMostrarRecentesTodas(Action):
         # ✅ CRÍTICO: Guardar no slot para /ver_receita funcionar
         return [SlotSet("receitas_encontradas", recentes_receitas)]
     
+        
 class ActionMostrarRecentesPorCategoria(Action):
     def name(self) -> Text:
         return "action_mostrar_recentes_por_categoria"
@@ -903,24 +905,31 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
             dispatcher.utter_message(text="Ainda não tenho receitas recentes registadas 🙂")
             return []
 
-        # Filtrar por categoria escolhida
         def match_categoria(cat: str) -> bool:
             c = (cat or "").strip().lower()
+
             if categoria_slot == "entrada":
                 return "entrada" in c
-            if categoria_slot == "prato_principal":
+            if categoria_slot in ["prato_principal", "prato principal"]:  # ✅ CORREÇÃO
                 return ("prato principal" in c) or ("prato_principal" in c)
             if categoria_slot == "sobremesa":
                 return "sobremesa" in c
+
             return False
 
         filtradas_rows = [r for r in rows if match_categoria(r.get("categoria", ""))]
+
+        # Normalizar o slot para ter sempre underscore
+        categoria_normalizada = categoria_slot.replace(" ", "_")
 
         nome_cat = {
             "entrada": "Entrada",
             "prato_principal": "Prato Principal",
             "sobremesa": "Sobremesa",
-        }.get(categoria_slot, "Categoria")
+        }.get(categoria_normalizada, "Categoria")
+
+
+
 
         if not filtradas_rows:
             dispatcher.utter_message(
@@ -1081,6 +1090,7 @@ class ActionMostrarFavoritosPorCategoria(Action):
         )
         return []
 
+
 class ActionMostrarFavoritosFiltradosPorCategoria(Action):
     def name(self) -> Text:
         return "action_mostrar_favoritos_filtrados_por_categoria"
@@ -1114,21 +1124,25 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
 
             if categoria_slot == "entrada":
                 return "entrada" in c
-            if categoria_slot == "prato_principal":
+            if categoria_slot == "prato_principal" or categoria_slot == "prato principal":
                 return ("prato principal" in c) or ("prato_principal" in c)
             if categoria_slot == "sobremesa":
                 return "sobremesa" in c
 
             return False
 
+        # ✅ ESTA LINHA ESTAVA A FALTAR!
         filtradas = [r for r in favoritos_receitas if match_categoria(r.get("categoria", ""))]
 
+        # Normalizar o slot para ter sempre underscore
+        categoria_normalizada = categoria_slot.replace(" ", "_")
+        
         # Títulos bonitos
         nome_cat = {
             "entrada": "Entrada",
             "prato_principal": "Prato Principal",
             "sobremesa": "Sobremesa",
-        }.get(categoria_slot, "Categoria")
+        }.get(categoria_normalizada, "Categoria")
 
         if not filtradas:
             dispatcher.utter_message(
@@ -1159,7 +1173,6 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
                 "payload": f'/ver_receita{{"numero_receita":"{i}"}}'
             })
 
-        # ALTERAÇÃO AQUI: Mudar "Voltar" para "Por categoria"
         buttons.append({"title": "⬅️ Por categoria", "payload": "/favoritos_por_categoria"})
         buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
 
@@ -1168,6 +1181,7 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
         # IMPORTANTÍSSIMO: guardar para o /ver_receita funcionar como sempre
         return [SlotSet("receitas_encontradas", filtradas)]
     
+        
 class ActionBuscarPorNome(Action):
     def name(self) -> Text:
         return "action_buscar_por_nome"

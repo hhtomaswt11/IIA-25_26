@@ -329,13 +329,23 @@ nlu:
     - guardar por favor 
     - sim guarda nos favoritos 
     - guardar nos favoritos 
+    - sim guardar 
+    - sim guarda 
  
 - intent: favoritar_nao
   examples: |
     - não
     - nao
     - não quero
-    - agora não
+    - nao quero 
+    - agora nao 
+    - agora não 
+    - nao guardar 
+    - não quero guardar 
+    - não é preciso guardar 
+    - nao é preciso guardar 
+    - nao quero guardar 
+
 
 - intent: remover_sim
   examples: |
@@ -386,6 +396,9 @@ nlu:
     - receitas guardadas nos favoritos
     - favoritos
     - mostrar favoritos 
+    - ver receitas favoritas 
+    - ver favoritas 
+    - ver as minhas receitas favoritas 
 
 - intent: recentes_filtrar_categoria
   examples: |
