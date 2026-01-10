@@ -53,6 +53,26 @@
           z-index: 50;
         }
       }
+
+      .message img {
+          max-width: 100%;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .message .image-container {
+          margin: 10px 0;
+          text-align: center;
+      }
+
+      .message .image-caption {
+          font-size: 12px;
+          color: #666;
+          margin-top: 4px;
+          font-style: italic;
+      }
+
+
     </style>
   </head>
   <body class="h-screen overflow-hidden">
@@ -536,11 +556,36 @@
             `;
       }
 
+
+
+
+
       function formatText(text) {
-        return text.replace(
-          /\*\*(.*?)\*\*/g,
-          '<strong class="font-bold">$1</strong>'
-        );
+          // Processar imagens primeiro
+          let processedText = text.replace(
+              /!\[(.*?)\]\((.*?)\)/g,
+              (match, alt, url) => {
+                  if (url.startsWith('http')) {
+                      return `<div class="my-4 rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                          <div class="flex justify-center bg-gray-50 p-3">
+                              <img src="${url}" alt="${alt}" 
+                                  class="max-w-full max-h-full object-contain" 
+                                  onerror="this.src='https://via.placeholder.com/400x300/FFA500/FFFFFF?text=Receita+Sem+Imagem'" 
+                                  loading="lazy">
+                          </div>
+                      </div>`;
+                  }
+                  return ''; // Remove completamente se não tiver URL válida
+              }
+          );
+          
+          // Processar negrito
+          processedText = processedText.replace(
+              /\*\*(.*?)\*\*/g,
+              '<strong class="font-bold">$1</strong>'
+          );
+          
+          return processedText;
       }
 
       async function sendMessage(text) {

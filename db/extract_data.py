@@ -34,6 +34,42 @@ CRITERIOS_POSSIVEIS = [
 ]
 
 
+def obter_imagem_principal(soup):
+    """
+    Tenta obter a imagem principal da receita.
+    Estratégia:
+      1) <meta property="og:image" ...> (normalmente é a principal)
+      2) <meta name="twitter:image" ...>
+      3) fallback para <img> dentro de <figure> perto do h1
+    """
+    # 1) OpenGraph
+    og = soup.find("meta", property="og:image")
+    if og and og.get("content"):
+        return og["content"].strip()
+
+    # 2) Twitter card
+    tw = soup.find("meta", attrs={"name": "twitter:image"})
+    if tw and tw.get("content"):
+        return tw["content"].strip()
+
+    # 3) fallback (mais frágil, mas ajuda se meta falhar)
+    h1 = soup.find("h1")
+    if h1:
+        # procura um figure/img ali “próximo”
+        for el in h1.find_all_next(["figure", "img"], limit=60):
+            if el.name == "img":
+                src = el.get("src") or el.get("data-src") or el.get("data-lazy-src")
+                if src:
+                    return src.strip()
+            elif el.name == "figure":
+                img = el.find("img")
+                if img:
+                    src = img.get("src") or img.get("data-src") or img.get("data-lazy-src")
+                    if src:
+                        return src.strip()
+
+    return None
+
 
 
 
@@ -133,6 +169,13 @@ def parse_recipe(url, categoria):
         return None
 
     soup = BeautifulSoup(resp.text, "html.parser")
+    
+        # imagem principal (obrigatória)
+    imagem = obter_imagem_principal(soup)
+    if not imagem:
+        print("  -> Ignorada: não tem imagem")
+        return None
+
 
     # título
     title_tag = soup.find("h1")
@@ -251,6 +294,8 @@ def parse_recipe(url, categoria):
         "ingredientes": ingredientes_str,
         "passos": passos_str,
         "criterios": " | ".join(criterios_encontrados),
+        "imagem": imagem,
+
     }
 
 
@@ -279,6 +324,7 @@ def main():
         "ingredientes",
         "passos",
         "criterios",
+        "imagem", 
     ]
 
     with open("petitchef_recipes.csv", "w", newline="", encoding="utf-8") as f:

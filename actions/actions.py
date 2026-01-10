@@ -97,7 +97,6 @@ def carregar_receitas():
                 # Cria o objeto limpo
                 receita = {
                     'id': row.get('id', '').strip(),
-
                     'titulo': row.get('titulo', '').strip(),
                     'categoria': row.get('categoria', '').strip().lower(),
                     'dificuldade': row.get('dificuldade', '').strip().lower(),
@@ -107,7 +106,8 @@ def carregar_receitas():
                     'rating': rating,
                     'ingredientes': ingredientes, 
                     'passos': passos,            
-                    'criterios': criterios       
+                    'criterios': criterios,
+                    'imagem': row.get('imagem', '').strip()  # ← NOVO: campo imagem
                 }
                 receitas.append(receita)
         
@@ -119,7 +119,6 @@ def carregar_receitas():
         traceback.print_exc()
     
     return receitas
-
 
 
 
@@ -184,6 +183,7 @@ def _receita_para_linha_csv(receita: Dict[str, Any], avaliacao_utilizador: Any):
         "criterios": "|".join(receita.get("criterios", []) or []),
         "ingredientes": "|".join(receita.get("ingredientes", []) or []),
         "passos": "|".join(receita.get("passos", []) or []),
+        "imagem": receita.get("imagem", ""),  # ← NOVO
         "avaliacao_utilizador": "" if avaliacao_utilizador is None else str(avaliacao_utilizador),
     }
 
@@ -385,8 +385,17 @@ class ActionMostrarReceitaCompleta(Action):
             
             r = receitas[indice]
             
+            # NOVO: Verificar se tem imagem
+            imagem = r.get('imagem', '')
+            
             # Cabeçalho
-            msg = f"🍳 **{r['titulo'].upper()}**\n\n"
+            msg = ""
+            
+            # Se tiver imagem, adiciona uma marcação especial para o frontend
+            if imagem:
+                msg += f"![{r['titulo']}]({imagem})\n\n"
+            
+            msg += f"🍳 **{r['titulo'].upper()}**\n\n"
             msg += f"⏱️ {r['tempo_total']} | 📊 {r['dificuldade'].title()} | 🔥 {r['calorias']} Kcal\n"
             msg += f"⭐ Rating: {r.get('rating',0)}/5\n\n"
             
@@ -411,19 +420,20 @@ class ActionMostrarReceitaCompleta(Action):
             else:
                 msg += "1. Misturar e cozinhar (passos não detalhados).\n"
             
-          #  bts = [{"title": "⬅️ Voltar à Lista", "payload": '/voltar'}, {"title": "🔄 Nova Busca", "payload": '/nova_busca'}]
-            bts = [{"title": "▶️ Começar modo-a-passo", "payload": "/comecar"},{"title": "⬅️ Voltar à Lista", "payload": "/voltar"},{"title": "🔄 Nova Busca", "payload": "/nova_busca"},]
+            bts = [
+                {"title": "▶️ Começar modo-a-passo", "payload": "/comecar"},
+                {"title": "⬅️ Voltar à Lista", "payload": "/voltar"},
+                {"title": "🔄 Nova Busca", "payload": "/nova_busca"},
+            ]
             dispatcher.utter_message(text=msg, buttons=bts)
 
-           # dispatcher.utter_message(text=msg, buttons=bts)
             return [SlotSet("receita_selecionada", r)]
             
         except Exception as e:
             dispatcher.utter_message(text=f"Erro ao mostrar receita: {str(e)}")
             print(f"Erro detalhado: {e}")
             return []
-
-
+        
 class ActionResetSlots(Action):
     def name(self) -> Text:
         return "action_reset_slots"
@@ -685,7 +695,7 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
             "id",
             "titulo", "categoria", "dificuldade", "tempo_total", "tempo_minutos",
             "calorias", "rating_dataset",
-            "criterios", "ingredientes", "passos",
+            "criterios", "ingredientes", "passos", "imagem", 
             "avaliacao_utilizador"
         ]
 
@@ -743,7 +753,7 @@ class ActionGuardarFavoritosCSV(Action):
             "id",
             "titulo", "categoria", "dificuldade", "tempo_total", "tempo_minutos",
             "calorias", "rating_dataset",
-            "criterios", "ingredientes", "passos"
+            "criterios", "ingredientes", "passos", "imagem"
         ]
 
         _garantir_csv_com_header(caminho, header)

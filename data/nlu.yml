@@ -360,16 +360,19 @@ nlu:
 
 - intent: remover_sim
   examples: |
-    - sim
     - remover
     - tira dos favoritos
+    - sim remove 
+    - podes remover 
+    - remove por favor 
 
 - intent: remover_nao
   examples: |
-    - não
-    - nao
-    - deixa
-    - manter
+    - deixa 
+    - nao remover 
+    - nao removas 
+    - mantem nos favoritos 
+    - mantem por favor 
 
 - intent: recentes_por_categoria
   examples: |
