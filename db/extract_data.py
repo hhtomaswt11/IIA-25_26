@@ -219,6 +219,12 @@ def parse_recipe(url, categoria):
                 tempo_total = t
                 break
 
+    if tempo_total is None:
+        print("  -> Ignorada: não tem tempo total")
+        return None
+       
+                
+                
     # rating
     rating = None
     for text in soup.stripped_strings:
