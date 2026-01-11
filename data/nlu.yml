@@ -50,7 +50,6 @@ nlu:
 - intent: escolher_tempo
   examples: |
     - [ate 30 minutos](tempo:ate_30min)
-    - [receita rápida](tempo:ate_30min)
     - [quero fazer uma receita rápida](tempo:ate_30min)
     - [ate 30 min](tempo:ate_30min)
     - [menos de 30 minutos](tempo:ate_30min)
@@ -59,6 +58,7 @@ nlu:
     - [30 a 60 minutos](tempo:30_60min)
     - [entre 30 e 60 minutos](tempo:30_60min)
     - [30 60 minutos](tempo:30_60min)
+    - [entre 30 e 60 min](tempo:30_60min)
     - [entre 30 e 60](tempo:30_60min)
     - [30min a 60min](tempo:30_60min)
     - [30 60](tempo:30_60min)
@@ -69,7 +69,6 @@ nlu:
     - [mais de 60min](tempo:mais_1h)
     - [tanto faz](tempo:tanto_faz)
     - [qualquer tempo](tempo:tanto_faz)
-    - não importa o tempo
     - tenho [pouco tempo](tempo:ate_30min)
     - tenho [tempo](tempo:tanto_faz)
     - algo [rápido](tempo:ate_30min)
@@ -107,8 +106,6 @@ nlu:
     - [nenhuma](restricao:nenhuma)
     - [nenhum](restricao:nenhuma)
     - [nada](restricao:nenhuma)
-    - [não tenho restrições](restricao:nenhuma)
-    - [sem restrições](restricao:nenhuma)
     - tenho intolerância a [lactose](restricao:sem_lactose)
     - alergia ao [glúten](restricao:sem_gluten)
     - não como carne, [vegetariano](restricao)
@@ -141,7 +138,10 @@ nlu:
     - [hipercalórico](preferencia_calorica:hipercalorico)   
     - [+900 calorias](preferencia_calorica:hipercalorico)   
     - [sem restrição](preferencia_calorica:sem_restricao)
-    - não importa as calorias
+    - [nao me importo](preferencia_calorica:sem_restricao)
+    - [nao me importo com as calorias](preferencia_calorica:sem_restricao)
+    - [sem restricao de calorias](preferencia_calorica:sem_restricao)
+
 
 - intent: ver_receita
   examples: |

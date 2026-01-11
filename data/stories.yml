@@ -133,9 +133,9 @@ stories:
     - action: utter_perguntar_restricoes
     - intent: escolher_restricoes
       entities:
-        - restricao: nenhuma
+        - restricao: outro
     - slot_was_set:
-        - restricao: nenhuma
+        - restricao: outro
     - action: utter_perguntar_ingrediente_especifico
     - intent: informar_ingrediente_evitar
       entities:
