@@ -695,7 +695,7 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
             "id",
             "titulo", "categoria", "dificuldade", "tempo_total", "tempo_minutos",
             "calorias", "rating_dataset",
-            "criterios", "ingredientes", "passos", "imagem", 
+            "criterios", "ingredientes", "passos", 
             "avaliacao_utilizador"
         ]
 
@@ -753,7 +753,7 @@ class ActionGuardarFavoritosCSV(Action):
             "id",
             "titulo", "categoria", "dificuldade", "tempo_total", "tempo_minutos",
             "calorias", "rating_dataset",
-            "criterios", "ingredientes", "passos", "imagem"
+            "criterios", "ingredientes", "passos", 
         ]
 
         _garantir_csv_com_header(caminho, header)

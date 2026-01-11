@@ -247,6 +247,8 @@ nlu:
     - começar modo a passo
     - iniciar modo a passo
     - quero começar
+    - quero começar a cozinhar 
+    - começar a fazer 
 
 - intent: confirmar_ingredientes
   examples: |
@@ -331,6 +333,7 @@ nlu:
     - nao avaliar
     - passar
     - não quero avaliar
+    
 
 - intent: favoritar_sim
   examples: |
