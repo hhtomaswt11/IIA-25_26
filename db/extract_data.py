@@ -15,9 +15,9 @@ CATEGORIAS = {
 }
 
 TARGETS = {
-    "Entrada": 8000,
-    "Prato Principal": 8000,
-    "Sobremesa": 8000,
+    "Entrada": 10000,
+    "Prato Principal": 10000,
+    "Sobremesa": 10000,
 }
 
 HEADERS = {
@@ -55,7 +55,7 @@ def obter_imagem_principal(soup):
     # 3) fallback (mais frágil, mas ajuda se meta falhar)
     h1 = soup.find("h1")
     if h1:
-        # procura um figure/img ali “próximo”
+        # procura um figure/img ali "próximo"
         for el in h1.find_all_next(["figure", "img"], limit=60):
             if el.name == "img":
                 src = el.get("src") or el.get("data-src") or el.get("data-lazy-src")
@@ -112,7 +112,7 @@ def normalizar(s: str) -> str:
     return s
 
 
-def get_recipe_links_limited(slug, max_needed, max_pages=20):
+def get_recipe_links_limited(slug, max_needed, max_pages=150):
     links = []
     page = 1
 
@@ -232,6 +232,57 @@ def parse_recipe(url, categoria):
         print("  -> Ignorada: não tem rating")
         return None
 
+    # ⚠️ extrair número de porções - CORRIGIDO com base na análise do HTML
+    porcoes = None
+    
+    # Método 1: Procura pelo elemento que contém "servings" ou "porções"
+    servings_elements = soup.find_all(['div', 'span'], class_=re.compile(r'servings|porções|doses', re.I))
+    
+    # Método 2: Procura por elementos com data-servings
+    if not porcoes:
+        for element in soup.find_all(attrs={"data-servings": True}):
+            porcoes = element.get("data-servings", "").strip()
+            if porcoes and porcoes.isdigit():
+                break
+    
+    # Método 3: Procura pelo elemento sf-val que contém o número
+    if not porcoes:
+        sf_val = soup.find(class_="sf-val")
+        if sf_val:
+            # Tenta extrair o número do texto ou do atributo data-laste
+            text = sf_val.get_text(strip=True)
+            if text and text.isdigit():
+                porcoes = text
+            else:
+                last_val = sf_val.get("data-laste", "")
+                if last_val and last_val.isdigit():
+                    porcoes = last_val
+    
+    # Método 4: Procura pelo texto "porções" na seção de ingredientes
+    if not porcoes:
+        ing_section = soup.find('section', id='rd-ingredients')
+        if ing_section:
+            # Procura pelo título "Ingredientes" e depois por porções
+            for element in ing_section.find_all(['div', 'span']):
+                if 'servings' in str(element.get('class', '')):
+                    text = element.get_text(strip=True)
+                    match = re.search(r'(\d+)\s*(porções|doses|servings)', text, re.I)
+                    if match:
+                        porcoes = match.group(1)
+                        break
+    
+    # Método 5: Procura em todo o texto
+    if not porcoes:
+        for text in soup.stripped_strings:
+            match = re.search(r'(\d+)\s*(porções|doses|servings)', text, re.I)
+            if match:
+                porcoes = match.group(1)
+                break
+
+    # ⚠️ ignorar receitas sem número de porções
+    if porcoes is None:
+        print("  -> Ignorada: não tem número de porções")
+        return None
 
     # ingredientes
     ingredientes = []
@@ -297,6 +348,7 @@ def parse_recipe(url, categoria):
         "tempo_total": tempo_total,
         "calorias": calorias,
         "rating": rating,
+        "porcoes": porcoes,
         "ingredientes": ingredientes_str,
         "passos": passos_str,
         "criterios": " | ".join(criterios_encontrados),
@@ -327,6 +379,7 @@ def main():
         "tempo_total",
         "calorias",
         "rating",
+        "porcoes",
         "ingredientes",
         "passos",
         "criterios",

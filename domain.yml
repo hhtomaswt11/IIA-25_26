@@ -18,38 +18,28 @@ intents:
   - ajuda
   - bot_challenge
   - informar_ingredientes_disponiveis
-  - quero_cozinhar_receita_especifica  # ← NOVO
-
-
+  - quero_cozinhar_receita_especifica  
   - comecar
   - confirmar_ingredientes
   - mostrar_ingredientes_primeiro
   - proximo_passo
   - abandonar_receita
   - guardar_favoritos
-
   - regressar_passo
   - finalizar_receita
-
   - dar_avaliacao
   - nao_avaliar
   - favoritar_sim
   - favoritar_nao
-
   - remover_sim
   - remover_nao
-
-
   - listar_recentes
   - recentes_ver_todas
   - recentes_por_categoria
-
   - listar_favoritos
   - favoritos_por_categoria
-
   - favoritos_filtrar_categoria
   - recentes_filtrar_categoria
-
 
 entities:
   - categoria
@@ -160,7 +150,6 @@ slots:
     mappings:
       - type: custom
 
-
   avaliacao_utilizador:
     type: float
     initial_value: null
@@ -168,7 +157,7 @@ slots:
     mappings:
       - type: custom
 
-  nome_receita:  # ← NOVO
+  nome_receita:  
     type: text
     mappings:
       - type: from_entity
@@ -191,7 +180,7 @@ responses:
       buttons:
         - title: "🥗 Entrada"
           payload: '/escolher_categoria{{"categoria":"entrada"}}'
-        - title: "🍝 Prato Principal"
+        - title: "🍝 Prato principal"
           payload: '/escolher_categoria{{"categoria":"prato_principal"}}'
         - title: "🍰 Sobremesa"
           payload: '/escolher_categoria{{"categoria":"sobremesa"}}'
@@ -220,9 +209,6 @@ responses:
         - title: "🎯 Qualquer"
           payload: '/escolher_dificuldade{{"dificuldade":"qualquer"}}'
   
-
-
-
   utter_perguntar_restricoes:
     - text: "Tens alguma restrição alimentar ou ingrediente que queiras evitar?"
       buttons:
@@ -230,13 +216,13 @@ responses:
           payload: '/escolher_restricoes{{"restricao":"vegetariano"}}'
         - title: "🌱 Vegano"
           payload: '/escolher_restricoes{{"restricao":"vegano"}}'
-        - title: "🌾 Sem Glúten"
+        - title: "🌾 Sem glúten"
           payload: '/escolher_restricoes{{"restricao":"sem_gluten"}}'
-        - title: "🥛 Sem Lactose"
+        - title: "🥛 Sem lactose"
           payload: '/escolher_restricoes{{"restricao":"sem_lactose"}}'
-        - title: "🚫 Sem Açúcar"
+        - title: "🚫 Sem açúcar"
           payload: '/escolher_restricoes{{"restricao":"sem_acucar"}}'
-        - title: "🥚 Sem Ovo"
+        - title: "🥚 Sem ovo"
           payload: '/escolher_restricoes{{"restricao":"sem_ovo"}}'
         - title: "✅ Nenhuma"
           payload: '/escolher_restricoes{{"restricao":"nenhuma"}}'
@@ -288,7 +274,6 @@ responses:
   utter_perguntar_ingredientes:
     - text: "Diz-me, que ingredientes tens aí em casa? (Ex: tenho batata, ovos e cebola)"
 
-
   utter_sem_receita_selecionada:
     - text: "Ups, não tenho nenhuma receita selecionada. Escolhe uma receita primeiro na lista 🙂"
 
@@ -297,8 +282,6 @@ responses:
 
   utter_guardado_favoritos:
     - text: "Feito ✅ Guardei nos teus favoritos!"
-
-
 
   utter_ok_sem_favoritos:
     - text: "Perfeito 🙂"
@@ -315,29 +298,19 @@ actions:
   - action_mostrar_passo_atual
   - action_proximo_passo
   - action_abandonar_receita
-
   - action_regressar_passo
-
   - action_perguntar_avaliacao
   - action_registar_recente_e_perguntar_favoritos
   - action_guardar_favoritos_csv
-
   - action_remover_favoritos_csv
-
   - action_mostrar_recentes_resumo
   - action_mostrar_recentes_todas
   - action_mostrar_recentes_por_categoria
-
   - action_mostrar_favoritos_lista
   - action_mostrar_favoritos_por_categoria
   - action_mostrar_favoritos_filtrados_por_categoria
-
-
   - action_mostrar_recentes_filtrados_por_categoria
-
-
   - action_buscar_por_nome 
-
 
 session_config:
   session_expiration_time: 60

@@ -27,6 +27,11 @@ with open(input_file, "r", encoding="utf-8", newline="") as fin, \
             if row.get(col) is not None:
                 row[col] = row[col].replace('"', "").replace("'", "")
 
+        # normalizar dificuldade: "Muito Fácil" -> "Fácil"
+        if row.get("dificuldade") == "Muito Fácil":
+            row["dificuldade"] = "Fácil"
+
         writer.writerow(row)
 
 print("Feito! Ficheiro gerado:", output_file)
+

@@ -50,12 +50,9 @@ def carregar_receitas():
         return []
     
     try:
-        # utf-8-sig é essencial para ficheiros vindos do Excel/Windows
         with open(caminho_csv, 'r', encoding='utf-8-sig') as file:
-            # O teu ficheiro usa ponto e vírgula
             reader = csv.DictReader(file, delimiter=';')
             
-            # Limpa espaços nos nomes das colunas (ex: " titulo " -> "titulo")
             reader.fieldnames = [name.strip() for name in reader.fieldnames]
             
             for row in reader:
@@ -70,13 +67,11 @@ def carregar_receitas():
                 if tempo_total:
                     numeros = re.findall(r'\d+', tempo_total)
                     if numeros:
-                        # Se tiver horas ("h"), a lógica muda
                         if 'h' in tempo_total.lower():
                             horas = int(numeros[0])
                             minutos = int(numeros[1]) if len(numeros) > 1 else 0
                             tempo_minutos = (horas * 60) + minutos
                         else:
-                            # Apenas minutos
                             tempo_minutos = int(numeros[0])
                 
                 # --- 3. TRATAMENTO DE NÚMEROS ---
@@ -87,12 +82,19 @@ def carregar_receitas():
                 except:
                     calorias = 0
 
-                # Rating (troca vírgula por ponto se necessário)
+                # Rating
                 rating_str = row.get('rating', '0').replace(',', '.').strip()
                 try:
                     rating = float(rating_str)
                 except:
                     rating = 0.0
+                
+                # --- 4. PORÇÕES (NOVO CAMPO) ---
+                porcoes_str = row.get('porcoes', '0').strip()
+                try:
+                    porcoes = int(float(porcoes_str)) if porcoes_str else 0
+                except:
+                    porcoes = 0
                 
                 # Cria o objeto limpo
                 receita = {
@@ -104,10 +106,11 @@ def carregar_receitas():
                     'tempo_minutos': tempo_minutos,
                     'calorias': calorias,
                     'rating': rating,
+                    'porcoes': porcoes,  
                     'ingredientes': ingredientes, 
                     'passos': passos,            
                     'criterios': criterios,
-                    'imagem': row.get('imagem', '').strip()  # ← NOVO: campo imagem
+                    'imagem': row.get('imagem', '').strip()
                 }
                 receitas.append(receita)
         
@@ -119,7 +122,6 @@ def carregar_receitas():
         traceback.print_exc()
     
     return receitas
-
 
 
 
@@ -180,13 +182,13 @@ def _receita_para_linha_csv(receita: Dict[str, Any], avaliacao_utilizador: Any):
         "tempo_minutos": receita.get("tempo_minutos", ""),
         "calorias": receita.get("calorias", ""),
         "rating_dataset": receita.get("rating", ""),
+        "porcoes": receita.get("porcoes", ""),  # ← NOVO
         "criterios": "|".join(receita.get("criterios", []) or []),
         "ingredientes": "|".join(receita.get("ingredientes", []) or []),
         "passos": "|".join(receita.get("passos", []) or []),
-        "imagem": receita.get("imagem", ""),  # ← NOVO
+        "imagem": receita.get("imagem", ""),
         "avaliacao_utilizador": "" if avaliacao_utilizador is None else str(avaliacao_utilizador),
     }
-
 class ActionBuscarReceitas(Action):
     def name(self) -> Text:
         return "action_buscar_receitas"
@@ -360,7 +362,7 @@ class ActionMostrarReceitas(Action):
             # Payload com chavetas duplas para o Rasa não bugar
             buttons.append({"title": f"Ver {i}: {receita['titulo']}", "payload": f'/ver_receita{{"numero_receita":"{i}"}}'})
         
-        buttons.append({"title": "🔄 Nova Busca", "payload": '/nova_busca'})
+        buttons.append({"title": "🔄 Nova busca", "payload": '/nova_busca'})
         dispatcher.utter_message(text=mensagem, buttons=buttons)
         return []
 
@@ -397,8 +399,9 @@ class ActionMostrarReceitaCompleta(Action):
             
             msg += f"🍳 **{r['titulo'].upper()}**\n\n"
             msg += f"⏱️ {r['tempo_total']} | 📊 {r['dificuldade'].title()} | 🔥 {r['calorias']} Kcal\n"
-            msg += f"⭐ Rating: {r.get('rating',0)}/5\n\n"
-            
+            msg += f"👥 Porções: {r.get('porcoes', 1)}\n"
+            msg += f"⭐ Rating: {r.get('rating',0)}/5\n"
+                                
             # Critérios (Sem glúten, etc)
             if r['criterios']:
                 # Junta a lista bonita
@@ -422,8 +425,8 @@ class ActionMostrarReceitaCompleta(Action):
             
             bts = [
                 {"title": "▶️ Começar modo-a-passo", "payload": "/comecar"},
-                {"title": "⬅️ Voltar à Lista", "payload": "/voltar"},
-                {"title": "🔄 Nova Busca", "payload": "/nova_busca"},
+                {"title": "⬅️ Voltar à lista", "payload": "/voltar"},
+                {"title": "🔄 Nova busca", "payload": "/nova_busca"},
             ]
             dispatcher.utter_message(text=msg, buttons=bts)
 
@@ -521,12 +524,12 @@ class ActionMostrarPassoAtual(Action):
 
         # Próximo (só se NÃO for o último)
         if passo_atual < total:
-            buttons.append({"title": "➡️ Próximo Passo", "payload": "/proximo_passo"})
+            buttons.append({"title": "➡️ Próximo passo", "payload": "/proximo_passo"})
 
 
         # Regressar (só se fizer sentido)
         if passo_atual > 1:
-            buttons.append({"title": "⬅️ Regressar Passo", "payload": "/regressar_passo"})
+            buttons.append({"title": "⬅️ Regressar passo", "payload": "/regressar_passo"})
 
         # Abandonar (sempre)
         buttons.append({"title": "🛑 Abandonar receita", "payload": "/abandonar_receita"})
@@ -565,8 +568,8 @@ class ActionAbandonarReceita(Action):
         dispatcher.utter_message(
             text="Ok — saímos do modo-a-passo. Queres voltar à lista ou fazer uma nova busca?",
             buttons=[
-                {"title": "⬅️ Voltar à Lista", "payload": "/voltar"},
-                {"title": "🔄 Nova Busca", "payload": "/nova_busca"},
+                {"title": "⬅️ Voltar à lista", "payload": "/voltar"},
+                {"title": "🔄 Nova busca", "payload": "/nova_busca"},
             ],
         )
         return [SlotSet("modo_passo", False), SlotSet("passo_atual", 0)]
@@ -696,8 +699,6 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
 
             print(f"✅ AVALIAÇÃO EXTRAÍDA: {avaliacao}")
 
-        
-    
         # Guardar em recentes.csv (sempre)
         caminho = "recentes.csv"
         header = [
@@ -870,8 +871,8 @@ class ActionMostrarRecentesResumo(Action):
         dispatcher.utter_message(
             text=msg,
             buttons=[
-                {"title": "📋 Ver Todas", "payload": "/recentes_ver_todas"},
-                {"title": "🗂️ Por Categoria", "payload": "/recentes_por_categoria"},
+                {"title": "📋 Ver todas", "payload": "/recentes_ver_todas"},
+                {"title": "🗂️ Por categoria", "payload": "/recentes_por_categoria"},
             ],
         )
 
@@ -888,7 +889,7 @@ class ActionMostrarRecentesTodas(Action):
         if not rows:      
             dispatcher.utter_message(
                 text="Ainda não tenho receitas recentes registadas 🙂",
-                buttons=[{"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"}],
+                buttons=[{"title": "⬅️ Listar recentes", "payload": "/listar_recentes"}],
             )
             return []
 
@@ -952,8 +953,8 @@ class ActionMostrarRecentesTodas(Action):
             })
 
         # Botões de navegação
-        buttons.append({"title": "⬅️ Listar Recentes", "payload": "/listar_recentes"})
-        buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
+        buttons.append({"title": "⬅️ Listar recentes", "payload": "/listar_recentes"})
+        buttons.append({"title": "🔄 Nova busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
@@ -992,7 +993,7 @@ class ActionMostrarRecentesPorCategoria(Action):
             text=msg,
             buttons=[
                 {"title": f"Entrada ({count_entrada})", "payload": '/recentes_filtrar_categoria{"categoria":"entrada"}'},
-                {"title": f"Prato Principal ({count_prato_principal})", "payload": '/recentes_filtrar_categoria{"categoria":"prato_principal"}'},
+                {"title": f"Prato principal ({count_prato_principal})", "payload": '/recentes_filtrar_categoria{"categoria":"prato_principal"}'},
                 {"title": f"Sobremesa ({count_sobremesa})", "payload": '/recentes_filtrar_categoria{"categoria":"sobremesa"}'},
                 {"title": "⬅️ Listar recentes", "payload": "/listar_recentes"},  # ALTERADO
             ],
@@ -1100,7 +1101,7 @@ class ActionMostrarRecentesFiltradosPorCategoria(Action):
             })
 
         buttons.append({"title": "⬅️ Por categoria", "payload": "/recentes_por_categoria"})
-        buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
+        buttons.append({"title": "🔄 Nova busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
@@ -1163,7 +1164,7 @@ class ActionMostrarFavoritosLista(Action):
 
         # Botões extra como pediste
         buttons.append({"title": "🗂️ Por categoria", "payload": "/favoritos_por_categoria"})
-        buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
+        buttons.append({"title": "🔄 Nova busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
@@ -1201,7 +1202,7 @@ class ActionMostrarFavoritosPorCategoria(Action):
             text=msg,
             buttons=[
                 {"title": f"Entrada ({count_entrada})", "payload": '/favoritos_filtrar_categoria{"categoria":"entrada"}'},
-                {"title": f"Prato Principal ({count_prato_principal})", "payload": '/favoritos_filtrar_categoria{"categoria":"prato_principal"}'},
+                {"title": f"Prato principal ({count_prato_principal})", "payload": '/favoritos_filtrar_categoria{"categoria":"prato_principal"}'},
                 {"title": f"Sobremesa ({count_sobremesa})", "payload": '/favoritos_filtrar_categoria{"categoria":"sobremesa"}'},
                 {"title": "⬅️ Listar favoritos", "payload": "/listar_favoritos"},  # ALTERADO
             ],
@@ -1292,7 +1293,7 @@ class ActionMostrarFavoritosFiltradosPorCategoria(Action):
             })
 
         buttons.append({"title": "⬅️ Por categoria", "payload": "/favoritos_por_categoria"})
-        buttons.append({"title": "🔄 Nova Busca", "payload": "/nova_busca"})
+        buttons.append({"title": "🔄 Nova busca", "payload": "/nova_busca"})
 
         dispatcher.utter_message(text=msg, buttons=buttons)
 
@@ -1383,7 +1384,7 @@ class ActionBuscarPorNome(Action):
         if not top_receitas:
             dispatcher.utter_message(
                 text=f"Não encontrei receitas de '{nome_receita}'. Queres tentar outro termo?",
-                buttons=[{"title": "🔄 Nova Busca", "payload": "/nova_busca"}]
+                buttons=[{"title": "🔄 Nova busca", "payload": "/nova_busca"}]
             )
             return [SlotSet("nome_receita", None)]
 
