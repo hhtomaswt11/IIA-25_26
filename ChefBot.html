@@ -708,7 +708,9 @@
         return `
                 <div class="flex ${
                   isBot ? "justify-start" : "justify-end"
-                } mb-6 animate-fadeIn">
+                } mb-6 ${
+          index + 1 === messages.length ? "animate-fadeIn" : ""
+        }">
                     <div class="flex ${
                       isBot ? "flex-row" : "flex-row-reverse"
                     } gap-4 max-w-[90%]">
