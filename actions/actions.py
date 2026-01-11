@@ -611,83 +611,93 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
     def name(self) -> Text:
         return "action_registar_recente_e_perguntar_favoritos"
 
-    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]):
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         receita = tracker.get_slot("receita_selecionada")
         if not receita:
             dispatcher.utter_message(response="utter_sem_receita_selecionada")
             return []
 
-        # ✅ EXTRAÇÃO ROBUSTA DA AVALIAÇÃO
-        avaliacao = None
+        # VERIFICAÇÃO CRÍTICA: Se o usuário escolheu "não avaliar"
+        intent_name = tracker.latest_message.get("intent", {}).get("name") if tracker.latest_message else ""
         
-        # Método 1: Tentar extrair da entidade (quando vem do payload dos botões)
-        if tracker.latest_message and tracker.latest_message.get("intent", {}).get("name") == "dar_avaliacao":
-            for ent in tracker.latest_message.get("entities", []):
-                if ent.get("entity") == "avaliacao_utilizador":
-                    avaliacao = ent.get("value")
-                    break
-        
-        # Método 2: Se não encontrou, extrair diretamente do texto
-        if avaliacao is None:
-            texto = tracker.latest_message.get("text", "").lower()
+        if intent_name == "nao_avaliar":
+            # Não avaliar - prosseguir sem avaliação
+            avaliacao = None
+            print("✅ Usuário escolheu não avaliar. Prosseguindo sem avaliação.")
+        else:
+            # Caso contrário, tentar extrair avaliação normalmente
+            avaliacao = None
             
-            # Mapear palavras por extenso
-            mapa_palavras = {
-                "uma": 1, "um": 1,
-                "duas": 2, "dois": 2,
-                "tres": 3, "três": 3,
-                "quatro": 4,
-                "cinco": 5
-            }
-            
-            # Procurar número explícito (1, 2, 3, etc)
-            numeros_encontrados = re.findall(r'\b([1-5])\b', texto)
-            if numeros_encontrados:
-                avaliacao = int(numeros_encontrados[0])
-            else:
-                # Procurar palavra por extenso
-                for palavra, num in mapa_palavras.items():
-                    if palavra in texto:
-                        avaliacao = num
+            # Método 1: Tentar extrair da entidade (quando vem do payload dos botões)
+            if tracker.latest_message and tracker.latest_message.get("intent", {}).get("name") == "dar_avaliacao":
+                for ent in tracker.latest_message.get("entities", []):
+                    if ent.get("entity") == "avaliacao_utilizador":
+                        avaliacao = ent.get("value")
                         break
+            
+            # Método 2: Se não encontrou, extrair diretamente do texto
+            if avaliacao is None:
+                texto = tracker.latest_message.get("text", "").lower()
+                
+                # Mapear palavras por extenso
+                mapa_palavras = {
+                    "uma": 1, "um": 1,
+                    "duas": 2, "dois": 2,
+                    "tres": 3, "três": 3,
+                    "quatro": 4,
+                    "cinco": 5
+                }
+                
+                # Procurar número explícito (1, 2, 3, etc)
+                numeros_encontrados = re.findall(r'\b([1-5])\b', texto)
+                if numeros_encontrados:
+                    avaliacao = int(numeros_encontrados[0])
+                else:
+                    # Procurar palavra por extenso
+                    for palavra, num in mapa_palavras.items():
+                        if palavra in texto:
+                            avaliacao = num
+                            break
+            
+            # Validar avaliação
+            if avaliacao is not None:
+                try:
+                    avaliacao = int(float(avaliacao))
+                    # ✅ VALIDAÇÃO: Só aceitar entre 1-5
+                    if avaliacao < 1 or avaliacao > 5:
+                        dispatcher.utter_message(
+                            text=f"⚠️ A avaliação deve ser entre 1 e 5 estrelas. Não é permitido: {avaliacao}",
+                            buttons=[
+                                {"title": "1 estrela ⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":1}'},
+                                {"title": "2 estrelas ⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":2}'},
+                                {"title": "3 estrelas ⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":3}'},
+                                {"title": "4 estrelas ⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":4}'},
+                                {"title": "5 estrelas ⭐⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":5}'},
+                            ]
+                        )
+                        return []
+                except:
+                    avaliacao = None
+
+            # Se ainda não conseguiu extrair e NÃO foi intenção de não avaliar, pedir novamente
+            if avaliacao is None and intent_name != "nao_avaliar":
+                dispatcher.utter_message(
+                    text="⚠️ Não consegui perceber a avaliação. Escolhe um número de 1 a 5:",
+                    buttons=[
+                        {"title": "1 estrela ⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":1}'},
+                        {"title": "2 estrelas ⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":2}'},
+                        {"title": "3 estrelas ⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":3}'},
+                        {"title": "4 estrelas ⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":4}'},
+                        {"title": "5 estrelas ⭐⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":5}'},
+                        {"title": "Não avaliar", "payload": "/nao_avaliar"},
+                    ]
+                )
+                return []
+
+            print(f"✅ AVALIAÇÃO EXTRAÍDA: {avaliacao}")
+
         
-        # Validar avaliação
-        if avaliacao is not None:
-            try:
-                avaliacao = int(float(avaliacao))
-                # ✅ VALIDAÇÃO: Só aceitar entre 1-5
-                if avaliacao < 1 or avaliacao > 5:
-                    dispatcher.utter_message(
-                        text=f"⚠️ A avaliação deve ser entre 1 e 5 estrelas. Não é permitido: {avaliacao}",
-                        buttons=[
-                            {"title": "1 estrela ⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":1}'},
-                            {"title": "2 estrelas ⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":2}'},
-                            {"title": "3 estrelas ⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":3}'},
-                            {"title": "4 estrelas ⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":4}'},
-                            {"title": "5 estrelas ⭐⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":5}'},
-                        ]
-                    )
-                    return []
-            except:
-                avaliacao = None
-
-        # Se ainda não conseguiu extrair, pedir novamente
-        if avaliacao is None:
-            dispatcher.utter_message(
-                text="⚠️ Não consegui perceber a avaliação. Escolhe um número de 1 a 5:",
-                buttons=[
-                    {"title": "1 estrela ⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":1}'},
-                    {"title": "2 estrelas ⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":2}'},
-                    {"title": "3 estrelas ⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":3}'},
-                    {"title": "4 estrelas ⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":4}'},
-                    {"title": "5 estrelas ⭐⭐⭐⭐⭐", "payload": '/dar_avaliacao{"avaliacao_utilizador":5}'},
-                    {"title": "Não avaliar", "payload": "/nao_avaliar"},
-                ]
-            )
-            return []
-
-        print(f"✅ AVALIAÇÃO EXTRAÍDA: {avaliacao}")
-
+    
         # Guardar em recentes.csv (sempre)
         caminho = "recentes.csv"
         header = [
