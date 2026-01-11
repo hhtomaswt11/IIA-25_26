@@ -50,6 +50,8 @@ nlu:
 - intent: escolher_tempo
   examples: |
     - [ate 30 minutos](tempo:ate_30min)
+    - [receita rápida](tempo:ate_30min)
+    - [quero fazer uma receita rápida](tempo:ate_30min)
     - [ate 30 min](tempo:ate_30min)
     - [menos de 30 minutos](tempo:ate_30min)
     - [ate 30](tempo:ate_30min)
@@ -230,6 +232,7 @@ nlu:
     - tenho [batata](ingrediente_possuido) e [ovos](ingrediente_possuido)
     - tenho [frango](ingrediente_possuido), [arroz](ingrediente_possuido) e [natas](ingrediente_possuido)
     - o que posso fazer com [atum](ingrediente_possuido)?
+    - o que posso fazer com [peixe](ingrediente_possuido)?
     - so tenho [cebola](ingrediente_possuido) e [tomate](ingrediente_possuido)
     - tenho [bacalhau](ingrediente_possuido)
     - receitas com [chocolate](ingrediente_possuido)
@@ -238,6 +241,7 @@ nlu:
     - [massa](ingrediente_possuido) e [natas](ingrediente_possuido)
     - tenho [frango](ingrediente_possuido), [arroz](ingrediente_possuido) e [natas](ingrediente_possuido), o que posso fazer?
     - tenho [atum](ingrediente_possuido). O que posso fazer?
+    - tenho [peixe](ingrediente_possuido). O que posso fazer?
     - com [atum](ingrediente_possuido), o que posso fazer?
 
 - intent: comecar

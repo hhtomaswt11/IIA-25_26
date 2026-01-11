@@ -1,298 +1,648 @@
 <!DOCTYPE html>
 <html lang="pt">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChefBot - Assistente Gastronómico</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🍳</text></svg>"
-    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🍳</text></svg>" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      body { font-family: 'Inter', sans-serif; }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-      .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-      .sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-      .sidebar-hidden { transform: translateX(-100%); width: 0; overflow: hidden; }
-      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-      .message-bubble { max-width: 85%; }
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E55A2B;
+            --secondary: #00C9B7;
+            --accent: #FFD166;
+            --dark: #1A1F2C;
+            --light: #F8FAFC;
+            --gray: #94A3B8;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            overflow: hidden;
+        }
+        
+        h1, h2, h3, .font-heading {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+        .animate-fadeInUp { animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Scrollbar personalizada */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Efeitos de glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-sidebar {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Botões e interações */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #00B4A9 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 201, 183, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 201, 183, 0.4);
+        }
+        
+        /* Card de mensagem */
+        .message-bubble-bot {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(255, 107, 53, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message-bubble-bot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 2px;
+        }
+        
+        .message-bubble-user {
+            background: linear-gradient(135deg, var(--dark) 0%, #2D3748 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(26, 31, 44, 0.2);
+        }
+        
+        /* Botões de ação rápida */
+        .quick-action-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+        
+        /* Indicador de digitação */
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+        }
+        
+        /* Efeito de brilho no input */
+        .input-glow {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 107, 53, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .input-glow:focus {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        
+        /* Cards do histórico */
+        .history-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .history-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .history-card:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .history-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Status indicator */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: rgba(16, 185, 129, 0.3);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+        }
+        
+        /* Botão de enviar */
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+        }
+        
+        /* Botão de ação */
+        .action-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            color: var(--primary);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* Sidebar transitions */
+        .sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+        
+        /* Para telas pequenas, a sidebar fica por cima */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                z-index: 50;
+                box-shadow: 5px 0 30px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar-hidden {
+                transform: translateX(-100%);
+            }
+        }
     </style>
-  </head>
-  <body class="h-screen overflow-hidden bg-[#F8FAFC]">
+</head>
+<body class="h-screen overflow-hidden">
     <div id="app" class="flex h-screen text-slate-800"></div>
 
     <script>
-      const RASA_URL = "http://localhost:5005/webhooks/rest/webhook";
+        const RASA_URL = "http://localhost:5005/webhooks/rest/webhook";
 
-      let messages = [{ type: "bot", text: "Olá! Sou o seu assistente ChefBot. Como posso ajudar na cozinha hoje? 👨‍🍳", timestamp: new Date() }];
-      let isTyping = false;
-      let input = "";
-      let conversations = [];
-      let currentConversationId = null;
-      let viewingHistoryId = null;
-      let sidebarOpen = true;
+        let messages = [{ type: "bot", text: "Olá! Sou o seu assistente ChefBot. Como posso ajudar na cozinha hoje? 👨‍🍳", timestamp: new Date() }];
+        let isTyping = false;
+        let input = "";
+        let conversations = [];
+        let currentConversationId = null;
+        let viewingHistoryId = null;
+        let sidebarOpen = true;
 
-      const quickActions = [
-        { text: "Quero cozinhar algo", icon: "🍳", color: "bg-white border-slate-200 text-slate-700" },
-        { text: "Mostrar favoritos", icon: "⭐", color: "bg-white border-slate-200 text-slate-700" },
-        { text: "Receitas recentes", icon: "🕒", color: "bg-white border-slate-200 text-slate-700" },
-      ];
+        const quickActions = [
+            { text: "Quero cozinhar algo", icon: "👨‍🍳", color: "from-orange-50 to-amber-50 border-orange-100 text-orange-700" },
+            { text: "Mostrar favoritos", icon: "⭐", color: "from-amber-50 to-yellow-50 border-amber-100 text-amber-700" },
+            { text: "Receitas recentes", icon: "🕒", color: "from-emerald-50 to-teal-50 border-emerald-100 text-emerald-700" },
+            { text: "Quero fazer pizza", icon: "🍕", color: "from-cyan-50 to-blue-50 border-cyan-100 text-cyan-700" },
+        ];
 
-      function loadConversations() {
-        const saved = localStorage.getItem("chefbot_conversations");
-        if (saved) conversations = JSON.parse(saved);
-      }
-
-      function saveConversations() {
-        localStorage.setItem("chefbot_conversations", JSON.stringify(conversations));
-      }
-
-      function createNewConversation() {
-        viewingHistoryId = null;
-        currentConversationId = Date.now().toString();
-        messages = [{ type: "bot", text: "Olá! Sou o seu assistente ChefBot. Como posso ajudar na cozinha hoje? 👨‍🍳", timestamp: new Date() }];
-        render();
-      }
-
-      function saveCurrentConversation() {
-        if (!currentConversationId || messages.length <= 1 || viewingHistoryId) return;
-        const existingIndex = conversations.findIndex((c) => c.id === currentConversationId);
-        const conversationData = {
-          id: currentConversationId,
-          title: generateConversationTitle(),
-          messages: messages,
-          lastUpdate: new Date().toISOString(),
-        };
-        if (existingIndex >= 0) conversations[existingIndex] = conversationData;
-        else conversations.unshift(conversationData);
-        if (conversations.length > 50) conversations = conversations.slice(0, 50);
-        saveConversations();
-      }
-
-      function generateConversationTitle() {
-        const userMessages = messages.filter((m) => m.type === "user");
-        if (userMessages.length > 0) {
-          const firstMsg = userMessages[0].text;
-          return firstMsg.length > 25 ? firstMsg.substring(0, 25) + "..." : firstMsg;
+        function loadConversations() {
+            const saved = localStorage.getItem("chefbot_conversations");
+            if (saved) conversations = JSON.parse(saved);
         }
-        return "Nova Receita";
-      }
 
-      function loadConversation(id) {
-        const conv = conversations.find((c) => c.id === id);
-        if (conv) {
-          viewingHistoryId = id;
-          messages = conv.messages.map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
-          render();
+        function saveConversations() {
+            localStorage.setItem("chefbot_conversations", JSON.stringify(conversations));
         }
-      }
 
-      function deleteConversation(id) {
-        conversations = conversations.filter((c) => c.id !== id);
-        saveConversations();
-        if (viewingHistoryId === id) createNewConversation();
-        else render();
-      }
+        function createNewConversation() {
+            viewingHistoryId = null;
+            currentConversationId = Date.now().toString();
+            messages = [{ type: "bot", text: "Olá! Sou o seu assistente ChefBot. Como posso ajudar na cozinha hoje? 👨‍🍳", timestamp: new Date() }];
+            render();
+        }
 
-      function toggleSidebar() {
-        sidebarOpen = !sidebarOpen;
-        render();
-      }
+        function saveCurrentConversation() {
+            if (!currentConversationId || messages.length <= 1 || viewingHistoryId) return;
+            const existingIndex = conversations.findIndex((c) => c.id === currentConversationId);
+            const conversationData = {
+                id: currentConversationId,
+                title: generateConversationTitle(),
+                messages: messages,
+                lastUpdate: new Date().toISOString(),
+            };
+            if (existingIndex >= 0) conversations[existingIndex] = conversationData;
+            else conversations.unshift(conversationData);
+            if (conversations.length > 50) conversations = conversations.slice(0, 50);
+            saveConversations();
+        }
 
-      function render() {
-        const app = document.getElementById("app");
-        const isViewingHistory = viewingHistoryId !== null;
+        function generateConversationTitle() {
+            const userMessages = messages.filter((m) => m.type === "user");
+            if (userMessages.length > 0) {
+                const firstMsg = userMessages[0].text;
+                return firstMsg.length > 25 ? firstMsg.substring(0, 25) + "..." : firstMsg;
+            }
+            return "Nova Receita";
+        }
 
-        app.innerHTML = `
-                <div class="sidebar ${sidebarOpen ? "w-72" : "sidebar-hidden"} bg-white border-r border-slate-200 flex flex-col z-20">
+        function loadConversation(id) {
+            const conv = conversations.find((c) => c.id === id);
+            if (conv) {
+                viewingHistoryId = id;
+                messages = conv.messages.map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
+                render();
+            }
+        }
+
+        function deleteConversation(id) {
+            conversations = conversations.filter((c) => c.id !== id);
+            saveConversations();
+            if (viewingHistoryId === id) createNewConversation();
+            else render();
+        }
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            render();
+        }
+
+        function render() {
+            const app = document.getElementById("app");
+            const isViewingHistory = viewingHistoryId !== null;
+
+            app.innerHTML = `
+                <div class="sidebar ${sidebarOpen ? "" : "sidebar-hidden"} w-80 glass-sidebar flex flex-col z-20 relative">
                     <div class="p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <span class="font-bold text-xl tracking-tight text-slate-900">Histórico</span>
-                            <button onclick="toggleSidebar()" class="md:hidden text-slate-400">✕</button>
+                        <div class="flex items-center justify-between mb-8">
+                            <div>
+                                <span class="font-heading font-bold text-2xl text-slate-900">Histórico</span>
+                                <p class="text-xs text-slate-400 mt-1">Suas conversas anteriores</p>
+                            </div>
+                            <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-orange-500 transition-colors p-2 hover:bg-orange-50 rounded-lg">
+                                <i class="fas fa-times text-lg"></i>
+                            </button>
                         </div>
-                        <button onclick="createNewConversation()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-medium shadow-sm">
-                            <span class="text-lg">+</span> Nova Conversa
+                        <button onclick="createNewConversation()" class="w-full btn-primary py-3 px-4 rounded-xl flex items-center justify-center gap-3 text-sm font-semibold">
+                            <i class="fas fa-plus-circle text-lg"></i>
+                            Nova Conversa
                         </button>
                     </div>
 
-                    <div class="flex-1 overflow-y-auto px-3 custom-scrollbar">
+                    <div class="flex-1 overflow-y-auto px-4 custom-scrollbar pb-6">
                         ${conversations.length === 0 ? `
-                            <div class="text-center py-10 px-4">
-                                <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Sem registos</p>
+                            <div class="text-center py-12 px-4">
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-orange-500">
+                                    <i class="fas fa-history text-2xl"></i>
+                                </div>
+                                <p class="text-slate-400 text-sm">Nenhuma conversa anterior</p>
+                                <p class="text-xs text-slate-300 mt-1">Comece uma nova conversa para salvá-la aqui</p>
                             </div>
-                        ` : conversations.map((conv) => `
-                            <div onclick="loadConversation('${conv.id}')" class="group relative p-3 mb-1 rounded-xl cursor-pointer transition-all ${viewingHistoryId === conv.id ? "bg-orange-50 text-orange-700" : "hover:bg-slate-50 text-slate-600"}">
-                                <p class="text-sm font-medium truncate pr-6">${conv.title}</p>
-                                <p class="text-[10px] opacity-60 mt-0.5">${new Date(conv.lastUpdate).toLocaleDateString()}</p>
-                                <button onclick="event.stopPropagation(); deleteConversation('${conv.id}')" class="absolute right-2 top-4 opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-all">🗑️</button>
+                        ` : conversations.map((conv, index) => `
+                            <div onclick="loadConversation('${conv.id}')" class="history-card p-4 mb-3 rounded-xl cursor-pointer ${viewingHistoryId === conv.id ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200 text-orange-800 shadow-md' : 'hover:shadow-md text-slate-700'}">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <p class="font-medium text-sm truncate pr-6">${conv.title}</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <i class="fas fa-clock text-xs text-slate-400"></i>
+                                            <p class="text-xs text-slate-400">${new Date(conv.lastUpdate).toLocaleDateString('pt-PT')} • ${new Date(conv.lastUpdate).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="event.stopPropagation(); deleteConversation('${conv.id}')" class="p-2 text-slate-400 hover:text-red-500 transition-colors hover:bg-red-50 rounded-lg">
+                                        <i class="fas fa-trash-alt text-xs"></i>
+                                    </button>
+                                </div>
                             </div>
                         `).join("")}
                     </div>
+                    
+                    <div class="p-4 border-t border-slate-100 mt-auto">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="status-indicator"></div>
+                                <span class="text-xs font-medium text-slate-500">Sistema Ativo</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex-1 flex flex-col min-w-0 bg-white md:bg-[#F8FAFC]">
-                    <nav class="h-16 border-b border-slate-200 bg-white flex items-center px-6 justify-between shrink-0">
+                <div class="flex-1 flex flex-col min-w-0 bg-transparent relative overflow-hidden">
+                    <nav class="h-16 glass border-b border-slate-200/50 flex items-center px-6 justify-between shrink-0 relative z-10">
                         <div class="flex items-center gap-4">
-                            <button onclick="toggleSidebar()" class="p-2 -ml-2 hover:bg-slate-100 rounded-lg transition-colors">
-                                <span class="text-xl">☰</span>
+                            <button onclick="toggleSidebar()" class="p-3 -ml-2 hover:bg-orange-50 rounded-xl transition-all text-slate-600 hover:text-orange-600">
+                                <i class="fas fa-bars text-lg"></i>
                             </button>
-                            <div>
-                                <h1 class="font-bold text-slate-900">ChefBot</h1>
-                                <div class="flex items-center gap-1.5">
-                                    <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                                    <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Sistema Ativo</span>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-utensils text-white"></i>
                                 </div>
+                                <div>
+                                    <h1 class="font-heading font-bold text-slate-900 text-xl">ChefBot</h1>
+                                    <div class="flex items-center gap-2">
+                                        <div class="status-indicator"></div>
+                                        <span class="text-xs uppercase tracking-wider font-bold text-slate-500">Assistente Culinário</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="px-3 py-1.5 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-100">
+                                <span class="text-xs font-medium text-orange-700">${conversations.length} conversas</span>
                             </div>
                         </div>
                     </nav>
 
-                    <div class="flex-1 overflow-y-auto custom-scrollbar" id="messagesArea">
-                        <div class="max-w-3xl mx-auto py-10 px-6">
+                    <div class="flex-1 overflow-y-auto custom-scrollbar relative z-10" id="messagesArea">
+                        <div class="max-w-3xl mx-auto py-8 px-6">
                             ${messages.length === 1 && !isViewingHistory ? `
-                                <div class="mb-12 text-center animate-fadeIn pt-10">
-                                    <h2 class="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">O que vamos preparar hoje?</h2>
-                                    <p class="text-slate-500 text-base mb-10 max-w-md mx-auto">Escolha um atalho ou descreva os ingredientes que tem à mão para começarmos.</p>
-                                    <div class="flex flex-wrap gap-3 justify-center">
+                                <div class="mb-12 text-center pt-8">
+                                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center shadow-xl">
+                                        <i class="fas fa-utensils text-4xl text-orange-500"></i>
+                                    </div>
+                                    <h2 class="text-4xl font-heading font-bold text-slate-900 mb-4 tracking-tight">O que vamos preparar hoje?</h2>
+                                    <p class="text-slate-500 text-base mb-10 max-w-md mx-auto">Descreva os ingredientes que tem, escolha uma categoria ou explore nossas funcionalidades.</p>
+                                    <div class="flex flex-wrap gap-4 justify-center mb-12">
                                         ${quickActions.map(a => `
-                                            <button onclick="sendMessage('${a.text}')" class="flex items-center gap-2 px-6 py-3 ${a.color} border rounded-xl shadow-sm hover:shadow-md hover:border-orange-200 transition-all text-sm font-semibold">
-                                                <span>${a.icon}</span> ${a.text}
+                                            <button onclick="sendMessage('${a.text}')" class="quick-action-card flex items-center gap-3 px-6 py-4 ${a.color} rounded-xl border shadow-sm transition-all text-sm font-semibold">
+                                                <span class="text-xl">${a.icon}</span> 
+                                                <span>${a.text}</span>
                                             </button>
                                         `).join("")}
+                                    </div>
+                                    <div class="max-w-md mx-auto glass p-6 rounded-2xl border border-slate-100/50 shadow-sm">
+                                        <h3 class="font-heading font-semibold text-slate-800 mb-3 text-sm uppercase tracking-wider text-slate-500">Experimente dizer:</h3>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button onclick="sendMessage('Quero fazer uma entrada')" class="action-btn px-4 py-2 rounded-lg text-sm">Entrada</button>
+                                            <button onclick="sendMessage('Tenho frango, o que posso fazer?')" class="action-btn px-4 py-2 rounded-lg text-sm">Algo com frango</button>
+                                            <button onclick="sendMessage('Tenho salada, o que posso fazer?')" class="action-btn px-4 py-2 rounded-lg text-sm">Fazer salada</button>
+                                            <button onclick="sendMessage('Quero fazer uma sobremesa')" class="action-btn px-4 py-2 rounded-lg text-sm">Sobremesa</button>
+                                        </div>
                                     </div>
                                 </div>
                             ` : ""}
 
                             ${messages.map((m, i) => renderMessage(m, i)).join("")}
                             ${isTyping ? `
-                                <div class="flex gap-4 mb-8 animate-fadeIn">
-                                    <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-sm">👨‍🍳</div>
-                                    <div class="bg-slate-100 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1 items-center">
-                                        <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div>
-                                        <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                                        <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                                <div class="flex gap-4 mb-8">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="message-bubble-bot px-5 py-4 rounded-2xl flex gap-2 items-center">
+                                        <div class="typing-indicator flex gap-1">
+                                            <span class="animate-bounce"></span>
+                                            <span class="animate-bounce" style="animation-delay: 0.2s"></span>
+                                            <span class="animate-bounce" style="animation-delay: 0.4s"></span>
+                                        </div>
+                                        <span class="text-sm text-slate-500 ml-2">ChefBot está digitando...</span>
                                     </div>
                                 </div>
                             ` : ""}
                         </div>
                     </div>
 
-                    <div class="p-6 shrink-0">
+                    <div class="p-6 shrink-0 relative z-10">
                         <div class="max-w-3xl mx-auto relative">
                             ${isViewingHistory ? `
-                                <div class="bg-slate-100 text-slate-500 py-3 px-6 rounded-2xl text-center text-sm font-medium border border-slate-200">
-                                    Modo de visualização de histórico
+                                <div class="glass py-4 px-6 rounded-2xl text-center border border-slate-100/50 shadow-sm">
+                                    <div class="flex items-center justify-center gap-3">
+                                        <i class="fas fa-eye text-slate-400"></i>
+                                        <span class="text-slate-600 font-medium">Modo de visualização de histórico</span>
+                                        <button onclick="createNewConversation()" class="btn-secondary py-1.5 px-4 rounded-lg text-xs font-medium ml-4">
+                                            <i class="fas fa-plus mr-1"></i> Nova Conversa
+                                        </button>
+                                    </div>
                                 </div>
                             ` : `
-                                <input id="messageInput" value="${input}" type="text" placeholder="Pergunte sobre uma receita ou ingrediente..." 
-                                    class="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-6 pr-16 shadow-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all">
-                                <button onclick="sendMessageFromInput()" class="absolute right-3 top-3 bg-orange-600 hover:bg-orange-700 text-white p-2.5 rounded-xl transition-all shadow-lg shadow-orange-200">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                                </button>
+                                <div class="relative">
+                                    <input id="messageInput" value="${input}" type="text" placeholder="Pergunte sobre uma receita, ingredientes ou técnicas culinárias..." 
+                                        class="input-glow w-full rounded-2xl py-4 pl-6 pr-20 focus:outline-none text-slate-700 placeholder-slate-400">
+                                    <button onclick="sendMessageFromInput()" class="send-btn absolute right-3 top-3 text-white p-3 rounded-xl transition-all">
+                                        <i class="fas fa-paper-plane text-lg"></i>
+                                    </button>
+                                    <div class="absolute right-16 top-4 flex gap-2">
+                                        <button onclick="sendMessage('Receitas rápidas')" class="p-2 text-slate-400 hover:text-orange-500 transition-colors" title="Receitas rápidas">
+                                            <i class="fas fa-bolt text-sm"></i>
+                                        </button>
+                                        <button onclick="sendMessage('Mostrar favoritos')" class="p-2 text-slate-400 hover:text-orange-500 transition-colors" title="Favoritos">
+                                            <i class="fas fa-star text-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             `}
                         </div>
                     </div>
                 </div>
             `;
 
-        setTimeout(() => {
-          const area = document.getElementById("messagesArea");
-          if (area) area.scrollTop = area.scrollHeight;
-          const inputEl = document.getElementById("messageInput");
-          if (inputEl) {
-            inputEl.addEventListener("input", (e) => input = e.target.value);
-            inputEl.addEventListener("keypress", (e) => e.key === "Enter" && sendMessageFromInput());
-            inputEl.focus();
-          }
-        }, 0);
-      }
+            setTimeout(() => {
+                const area = document.getElementById("messagesArea");
+                if (area) area.scrollTop = area.scrollHeight;
+                const inputEl = document.getElementById("messageInput");
+                if (inputEl) {
+                    inputEl.addEventListener("input", (e) => input = e.target.value);
+                    inputEl.addEventListener("keypress", (e) => e.key === "Enter" && sendMessageFromInput());
+                    inputEl.focus();
+                }
+            }, 0);
+        }
 
-      function renderMessage(message, index) {
-        const isBot = message.type === "bot";
-        const isViewingHistory = viewingHistoryId !== null;
+        function renderMessage(message, index) {
+            const isBot = message.type === "bot";
+            const isViewingHistory = viewingHistoryId !== null;
 
-        return `
-            <div class="flex ${isBot ? "justify-start" : "justify-end"} mb-8 animate-fadeIn">
-                <div class="flex ${isBot ? "flex-row" : "flex-row-reverse"} gap-4 max-w-[85%]">
-                    <div class="w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm shadow-sm ${isBot ? "bg-orange-600 text-white" : "bg-slate-800 text-white"}">
-                        ${isBot ? "👨‍🍳" : "U"}
-                    </div>
-                    <div class="flex flex-col ${isBot ? "items-start" : "items-end"}">
-                        <div class="px-5 py-3 rounded-2xl shadow-sm border ${isBot ? "bg-white border-slate-100 text-slate-700 rounded-tl-none" : "bg-slate-800 text-white rounded-tr-none"}">
-                            <div class="text-[15px] leading-relaxed whitespace-pre-wrap">${formatText(message.text)}</div>
+            return `
+                <div class="flex ${isBot ? "justify-start" : "justify-end"} mb-6 animate-fadeIn">
+                    <div class="flex ${isBot ? "flex-row" : "flex-row-reverse"} gap-4 max-w-[90%]">
+                        <div class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center shadow-lg ${isBot ? "bg-gradient-to-br from-orange-500 to-orange-600 text-white" : "bg-gradient-to-br from-slate-800 to-slate-900 text-white"}">
+                            ${isBot ? '<i class="fas fa-utensils"></i>' : '<i class="fas fa-user"></i>'}
                         </div>
-                        
-                        ${message.buttons && message.buttons.length > 0 && !isViewingHistory ? `
-                            <div class="flex flex-wrap gap-2 mt-4">
-                                ${message.buttons.map(btn => `
-                                    <button onclick="handleButtonClick(decodeURIComponent('${encodeURIComponent(btn.payload)}'))" 
-                                        class="px-4 py-1.5 bg-white border border-orange-200 text-orange-600 rounded-full hover:bg-orange-600 hover:text-white transition-all text-xs font-semibold shadow-sm">
-                                        ${btn.title}
-                                    </button>
-                                `).join("")}
+                        <div class="flex flex-col ${isBot ? "items-start" : "items-end"} flex-1">
+                            <div class="${isBot ? "message-bubble-bot" : "message-bubble-user"} px-5 py-4 rounded-2xl max-w-full">
+                                <div class="text-[15px] leading-relaxed whitespace-pre-wrap">${formatText(message.text)}</div>
                             </div>
-                        ` : ""}
-                        <span class="text-[10px] text-slate-400 mt-2 font-medium uppercase tracking-tighter">
-                            ${message.timestamp.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
-                        </span>
+                            
+                            ${message.buttons && message.buttons.length > 0 && !isViewingHistory ? `
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    ${message.buttons.map(btn => `
+                                        <button onclick="handleButtonClick(decodeURIComponent('${encodeURIComponent(btn.payload)}'))" 
+                                            class="action-btn px-4 py-2 rounded-full text-xs font-semibold">
+                                            ${btn.title}
+                                        </button>
+                                    `).join("")}
+                                </div>
+                            ` : ""}
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-[10px] text-slate-400 font-medium">
+                                    ${message.timestamp.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
+                                </span>
+                                ${isBot ? '<span class="text-[10px] text-orange-400 font-medium px-2 py-0.5 bg-orange-50 rounded-full">ChefBot</span>' : '<span class="text-[10px] text-slate-400 font-medium px-2 py-0.5 bg-slate-100 rounded-full">Você</span>'}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-      }
-
-      function formatText(text) {
-        let processedText = text.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
-          if (url.startsWith('http')) {
-            return `<div class="my-4 rounded-xl overflow-hidden border border-slate-100 shadow-sm"><img src="${url}" alt="${alt}" class="w-full object-cover max-h-72" onerror="this.src='https://via.placeholder.com/400x300?text=Sem+Imagem'"></div>`;
-          }
-          return '';
-        });
-        return processedText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>');
-      }
-
-      async function sendMessage(text) {
-        if (!text.trim() || viewingHistoryId) return;
-        messages.push({ type: "user", text: text, timestamp: new Date() });
-        input = "";
-        isTyping = true;
-        render();
-
-        try {
-          const response = await fetch(RASA_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sender: "user", message: text }),
-          });
-          const data = await response.json();
-          isTyping = false;
-          if (data && data.length > 0) {
-            data.forEach((msg) => {
-              messages.push({ type: "bot", text: msg.text, buttons: msg.buttons, timestamp: new Date() });
-            });
-          }
-          saveCurrentConversation();
-          render();
-        } catch (error) {
-          isTyping = false;
-          messages.push({ type: "bot", text: "❌ Erro de conexão com o servidor Rasa.", timestamp: new Date() });
-          render();
+            `;
         }
-      }
 
-      function sendMessageFromInput() {
-        if (input.trim()) sendMessage(input.trim());
-      }
+        function formatText(text) {
+            let processedText = text.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+                if (url.startsWith('http')) {
+                    return `<div class="my-4 rounded-xl overflow-hidden border border-slate-100 shadow-lg animate-fadeIn"><img src="${url}" alt="${alt}" class="w-full object-cover max-h-72" onerror="this.src='https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"></div>`;
+                }
+                return '';
+            });
+            
+            // Melhor formatação de texto
+            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>');
+            processedText = processedText.replace(/\n\n/g, '<br><br>');
+            processedText = processedText.replace(/(🍳|👨‍🍳|⭐|🔥|⏱️|✅|👨‍🍳|🛒)/g, '<span class="text-lg inline-block mr-1">$1</span>');
+            
+            return processedText;
+        }
 
-      function handleButtonClick(payload) {
-        sendMessage(payload);
-      }
+        async function sendMessage(text) {
+            if (!text.trim() || viewingHistoryId) return;
+            messages.push({ type: "user", text: text, timestamp: new Date() });
+            input = "";
+            isTyping = true;
+            render();
 
-      loadConversations();
-      createNewConversation();
+            try {
+                const response = await fetch(RASA_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sender: "user", message: text }),
+                });
+                const data = await response.json();
+                isTyping = false;
+                if (data && data.length > 0) {
+                    data.forEach((msg) => {
+                        messages.push({ type: "bot", text: msg.text, buttons: msg.buttons, timestamp: new Date() });
+                    });
+                }
+                saveCurrentConversation();
+                render();
+            } catch (error) {
+                isTyping = false;
+                messages.push({ type: "bot", text: "❌ Erro de conexão com o servidor. Verifique se o servidor Rasa está em execução.", timestamp: new Date() });
+                render();
+            }
+        }
+
+        function sendMessageFromInput() {
+            if (input.trim()) sendMessage(input.trim());
+        }
+
+        function handleButtonClick(payload) {
+            sendMessage(payload);
+        }
+
+        loadConversations();
+        createNewConversation();
     </script>
-  </body>
+</body>
 </html>
