@@ -15,9 +15,9 @@ CATEGORIAS = {
 }
 
 TARGETS = {
-    "Entrada": 1200,
-    "Prato Principal": 1200,
-    "Sobremesa": 1200,
+    "Entrada": 8000,
+    "Prato Principal": 8000,
+    "Sobremesa": 8000,
 }
 
 HEADERS = {
@@ -226,6 +226,12 @@ def parse_recipe(url, categoria):
         if m and "votos" in text:
             rating = m.group(1).replace(",", ".")
             break
+
+    # ⚠️ ignorar receitas sem rating
+    if rating is None:
+        print("  -> Ignorada: não tem rating")
+        return None
+
 
     # ingredientes
     ingredientes = []

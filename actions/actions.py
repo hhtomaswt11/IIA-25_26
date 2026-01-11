@@ -732,16 +732,16 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
             dispatcher.utter_message(
                 text="Remover dos favoritos?",
                 buttons=[
-                    {"title": "✅ Sim", "payload": "/remover_sim"},
-                    {"title": "❌ Não", "payload": "/remover_nao"},
+                    {"title": "✅ Sim, remover", "payload": "/remover_sim"},
+                    {"title": "❌ Não, não remover", "payload": "/remover_nao"},
                 ],
             )
         else:
             dispatcher.utter_message(
                 text="Guardar nos favoritos?",
                 buttons=[
-                    {"title": "✅ Sim", "payload": "/favoritar_sim"},
-                    {"title": "❌ Não", "payload": "/favoritar_nao"},
+                    {"title": "✅ Sim, guardar", "payload": "/favoritar_sim"},
+                    {"title": "❌ Não guardar", "payload": "/favoritar_nao"},
                 ],
             )
 
