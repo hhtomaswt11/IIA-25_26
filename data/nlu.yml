@@ -68,6 +68,7 @@ nlu:
     - [mais de 60 minutos](tempo:mais_1h)
     - [mais de 60min](tempo:mais_1h)
     - [tanto faz](tempo:tanto_faz)
+    - [tanto faz o tempo](tempo:tanto_faz)
     - [qualquer tempo](tempo:tanto_faz)
     - tenho [pouco tempo](tempo:ate_30min)
     - tenho [tempo](tempo:tanto_faz)
@@ -85,7 +86,6 @@ nlu:
     - [difícil](dificuldade)
     - algo [difícil](dificuldade)
     - [qualquer](dificuldade)
-    - não importa
     - sou [iniciante](dificuldade:facil)
     - sou [experiente](dificuldade:dificil)
     - nivel [medio](dificuldade)
