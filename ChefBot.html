@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ChefBot - Assistente Gastronómico</title>
+    <title>ChefBot</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🍳</text></svg>" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -521,10 +521,12 @@
                                 <div class="relative">
                                     <input id="messageInput" value="${input}" type="text" placeholder="Pergunte sobre uma receita, ingredientes ou técnicas culinárias..." 
                                         class="input-glow w-full rounded-2xl py-4 pl-6 pr-20 focus:outline-none text-slate-700 placeholder-slate-400">
-                                    <button onclick="sendMessageFromInput()" class="send-btn absolute right-3 top-3 text-white p-3 rounded-xl transition-all">
+                                     <button onclick="sendMessageFromInput()" class="send-btn absolute right-3 text-white p-3 rounded-xl transition-all" style="top: 0.2rem;">
                                         <i class="fas fa-paper-plane text-lg"></i>
                                     </button>
-                                    <div class="absolute right-16 top-4 flex gap-2">
+                                    <div class="absolute right-16 top-3 flex gap-2">
+
+
                                         <button onclick="sendMessage('Receitas recentes')" class="p-2 text-slate-400 hover:text-orange-500 transition-colors" title="Receitas recentes">
                                             <i class="fas fa-bolt text-sm"></i>
                                         </button>

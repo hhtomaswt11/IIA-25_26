@@ -123,8 +123,6 @@ def carregar_receitas():
     
     return receitas
 
-
-
 def _esta_nos_favoritos(receita_id: str, caminho: str = "favoritos.csv") -> bool:
     if not receita_id or not os.path.exists(caminho):
         return False
@@ -137,7 +135,6 @@ def _esta_nos_favoritos(receita_id: str, caminho: str = "favoritos.csv") -> bool
     except:
         return False
     return False
-
 
 def _remover_dos_favoritos(receita_id: str, caminho: str = "favoritos.csv") -> bool:
     if not receita_id or not os.path.exists(caminho):
@@ -163,7 +160,6 @@ def _remover_dos_favoritos(receita_id: str, caminho: str = "favoritos.csv") -> b
         return True
     except:
         return False
-
 
 def _garantir_csv_com_header(caminho: str, header: List[str]):
     existe = os.path.exists(caminho)
@@ -271,7 +267,6 @@ class ActionBuscarReceitas(Action):
             receitas_filtradas = [r for r in receitas_filtradas if 600 < r["calorias"] <= 900]
         elif preferencia_calorica == "hipercalorico":      # <-- NOVO
             receitas_filtradas = [r for r in receitas_filtradas if r["calorias"] > 900]
-
             
         # Ordenar por rating (melhores primeiro) e pegar top 5
         receitas_filtradas.sort(key=lambda x: x['rating'], reverse=True)
@@ -286,13 +281,13 @@ class ActionBuscarPorIngredientes(Action):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
         # 1. Obter a lista de ingredientes que o utilizador disse que tem
-        ingredientes_usuario = tracker.get_slot("lista_ingredientes_possuido")
+        ingredientes_utilizador = tracker.get_slot("lista_ingredientes_possuido")
         
-        if not ingredientes_usuario:
+        if not ingredientes_utilizador:
             dispatcher.utter_message(text="Não percebi quais ingredientes tens. Podes repetir? (Ex: tenho batata e ovos)")
             return []
 
-        print(f"🔍 Ingredientes do utilizador: {ingredientes_usuario}")
+        print(f"🔍 Ingredientes do utilizador: {ingredientes_utilizador}")
 
         todas_receitas = carregar_receitas() # Usa a tua função existente
         receitas_pontuadas = []
@@ -303,8 +298,8 @@ class ActionBuscarPorIngredientes(Action):
             matches = 0
             ingredientes_receita_str = " ".join(receita['ingredientes']).lower()
             
-            # Verifica cada ingrediente do usuario contra a lista da receita
-            for ing_user in ingredientes_usuario:
+            # Verifica cada ingrediente do user contra a lista da receita
+            for ing_user in ingredientes_utilizador:
                 # Remove o 's' final para tentar lidar com plurais simples (ex: ovos -> ovo)
                 termo = ing_user.lower().rstrip('s') 
                 if termo in ingredientes_receita_str:
@@ -324,7 +319,7 @@ class ActionBuscarPorIngredientes(Action):
         top_receitas = [r[1] for r in receitas_pontuadas[:5]]
 
         if not top_receitas:
-            dispatcher.utter_message(text=f"Não encontrei receitas específicas com {', '.join(ingredientes_usuario)}. Tenta outros ingredientes!")
+            dispatcher.utter_message(text=f"Não encontrei receitas específicas com {', '.join(ingredientes_utilizador)}. Tenta outros ingredientes!")
             return []
 
         # 4. Guardar no Slot para usar a ActionMostrarReceitas existente
@@ -365,7 +360,6 @@ class ActionMostrarReceitas(Action):
         buttons.append({"title": "🔄 Nova busca", "payload": '/nova_busca'})
         dispatcher.utter_message(text=mensagem, buttons=buttons)
         return []
-
 
 class ActionMostrarReceitaCompleta(Action):
     def name(self) -> Text:
@@ -525,15 +519,11 @@ class ActionMostrarPassoAtual(Action):
         # Próximo (só se NÃO for o último)
         if passo_atual < total:
             buttons.append({"title": "➡️ Próximo passo", "payload": "/proximo_passo"})
-
-
         # Regressar (só se fizer sentido)
         if passo_atual > 1:
             buttons.append({"title": "⬅️ Regressar passo", "payload": "/regressar_passo"})
-
         # Abandonar (sempre)
         buttons.append({"title": "🛑 Abandonar receita", "payload": "/abandonar_receita"})
-
         # Finalizar (apenas no último passo)
         if passo_atual == total:
             buttons.append({"title": "✅ Finalizar receita", "payload": "/finalizar_receita"})
@@ -709,9 +699,7 @@ class ActionRegistarRecenteEPerguntarFavoritos(Action):
             "criterios", "ingredientes", "passos", 
             "avaliacao_utilizador"
         ]
-
         _garantir_csv_com_header(caminho, header)
-
         data_finalizacao = datetime.now().isoformat(timespec="seconds")
         linha = _receita_para_linha_csv(receita, avaliacao)
 
@@ -766,9 +754,7 @@ class ActionGuardarFavoritosCSV(Action):
             "calorias", "rating_dataset",
             "criterios", "ingredientes", "passos", 
         ]
-
         _garantir_csv_com_header(caminho, header)
-
         data_favorito = datetime.now().isoformat(timespec="seconds")
         linha = _receita_para_linha_csv(receita, None)
 
@@ -782,8 +768,6 @@ class ActionGuardarFavoritosCSV(Action):
                 linha["calorias"], linha["rating_dataset"],
                 linha["criterios"], linha["ingredientes"], linha["passos"],
             ])
-
-
         dispatcher.utter_message(text="Feito ✅ Guardei nos teus favoritos!")
         return []
 
@@ -812,9 +796,6 @@ def _ler_csv_dicts(caminho: str) -> List[Dict[str, Any]]:
         return []
     with open(caminho, "r", encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f, delimiter=";"))
-
-
-
 
 def _carregar_avaliacoes_recentes() -> Dict[str, str]:
     """Carrega avaliações do recentes.csv e mapeia ID -> avaliação_utilizador"""
@@ -866,8 +847,6 @@ class ActionMostrarRecentesResumo(Action):
             f"⭐ Mais feita: {mais_feita_titulo}\n"
             f"📅 Última: {ultima_titulo}\n"
         )
-
-
         dispatcher.utter_message(
             text=msg,
             buttons=[
@@ -875,10 +854,7 @@ class ActionMostrarRecentesResumo(Action):
                 {"title": "🗂️ Por categoria", "payload": "/recentes_por_categoria"},
             ],
         )
-
-        
         return []
-    
     
 class ActionMostrarRecentesTodas(Action):
     def name(self) -> Text:

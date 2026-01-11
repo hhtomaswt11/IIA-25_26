@@ -227,12 +227,9 @@ responses:
         - title: "✅ Nenhuma"
           payload: '/escolher_restricoes{{"restricao":"nenhuma"}}'
 
-
   utter_perguntar_ingrediente_especifico:
     - text: "Diz-me que ingrediente queres evitar (por exemplo: ovo, leite, cebola)"
   
-
-
   utter_perguntar_calorias:
     - text: "Queres uma opção mais leve ou não te importas com as calorias?"
       buttons:
@@ -246,7 +243,6 @@ responses:
           payload: '/escolher_calorias{{"preferencia_calorica":"hipercalorico"}}'
         - title: "🍕 Sem restrição"
           payload: '/escolher_calorias{{"preferencia_calorica":"sem_restricao"}}'
-
 
   utter_procurando_receitas:
     - text: "A procurar as melhores receitas para ti... 🔍"

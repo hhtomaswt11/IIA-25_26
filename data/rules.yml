@@ -2,8 +2,6 @@
 
   rules:
 
-  # --- REGRAS BÁSICAS (Saudações, Ajuda, etc) ---
-
   - rule: Saudar sempre
     steps:
       - intent: greet
@@ -170,9 +168,6 @@
     steps:
       - intent: recentes_filtrar_categoria
       - action: action_mostrar_recentes_filtrados_por_categoria
-
-
-
 
   - rule: Procurar receita por nome específico
     steps:

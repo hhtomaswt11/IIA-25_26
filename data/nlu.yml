@@ -332,14 +332,12 @@ nlu:
     - avalio com [4](avaliacao_utilizador)
     - avalio com [5](avaliacao_utilizador)
 
-
 - intent: nao_avaliar
   examples: |
     - não avaliar
     - nao avaliar
     - passar
     - não quero avaliar
-    
 
 - intent: favoritar_sim
   examples: |
@@ -365,7 +363,6 @@ nlu:
     - não é preciso guardar 
     - nao é preciso guardar 
     - nao quero guardar 
-
 
 - intent: remover_sim
   examples: |
@@ -447,8 +444,6 @@ nlu:
     - receitas recentes de [prato principal](categoria)
     - receitas recentes de [sobremesa](categoria)
 
-
-
 - intent: favoritos_filtrar_categoria
   examples: |
     - favoritos de [entrada](categoria)
@@ -471,11 +466,6 @@ nlu:
     - receitas favoritos de [prato principal](categoria)
     - receitas favoritos de [sobremesa](categoria)
 
-
-
-
-
-        
 - intent: quero_cozinhar_receita_especifica
   examples: |
     - quero cozinhar [creme de abóbora](nome_receita)
@@ -540,8 +530,3 @@ nlu:
     - todas as recentes 
     - mostrar todas as recentes 
     - mostrar todas as receitas recentes 
-
-
-
-
-

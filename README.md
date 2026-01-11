@@ -6,9 +6,9 @@ O bot permite pesquisar receitas com base em preferências do utilizador, acompa
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
-- 🔍 **Pesquisa de receitas** por:
+- **Pesquisa de receitas** por:
   - Categoria (entrada, prato principal, sobremesa)
   - Tempo de preparação
   - Dificuldade
@@ -16,25 +16,25 @@ O bot permite pesquisar receitas com base em preferências do utilizador, acompa
   - Preferência calórica
   - Ingredientes disponíveis
 
-- 🧑‍🍳 **Modo passo-a-passo**
+- **Modo passo-a-passo**
   - Navegação entre passos
   - Avançar, regressar ou abandonar receita
   - Finalização com avaliação
 
-- ⭐ **Avaliação de receitas** (1 a 5 estrelas)
-- ❤️ **Gestão de favoritos**
-- 🕐 **Histórico de receitas recentes**
+- **Avaliação de receitas** (1 a 5 estrelas)
+- **Gestão de favoritos**
+- **Histórico de receitas recentes**
   - Resumo geral
   - Filtragem por categoria
 
-- 🌐 **Interface Web moderna**
+- **Interface Web moderna**
   - Histórico de conversas
   - Interface responsiva
   - Suporte a imagens nas receitas
 
 ---
 
-## 🏗️ Arquitetura do Projeto
+## Arquitetura do Projeto
 
 ```
 
@@ -46,7 +46,12 @@ IIA-25_26/
 ├── actions/
 │   └── actions.py        # Ações customizadas em Python
 ├── db/
+│   └── petitchef_recipes.csv       # Dataset raw - web scraping  
+│   └── recipes_old.csv       # Dataset após limpeza
 │   └── recipes.csv       # Dataset principal de receitas
+│   └── extract_data.py       # Script de extração - web scraping 
+│   └── clean_csv.py       # Script de limpeza e transformações 
+│   └── add_id.py       # Script para adição de identificador às receitas
 ├── models/               # Modelos treinados do Rasa
 ├── tests/                # Testes do chatbot
 ├── config.yml           # Configuração do pipeline do Rasa
@@ -59,7 +64,7 @@ IIA-25_26/
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Rasa Open Source**
 - **Python 3**
@@ -70,7 +75,7 @@ IIA-25_26/
 
 ---
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 ### 1️⃣ Instalar dependências
 
@@ -117,7 +122,7 @@ Abrir o ficheiro `ChefBot.html` num browser (recomendado: Chrome ou Firefox).
 
 ---
 
-## 📊 Dataset de Receitas
+## Dataset de Receitas
 
 As receitas são carregadas a partir de um ficheiro CSV (`recipes.csv`) com os seguintes campos:
 
@@ -128,6 +133,7 @@ As receitas são carregadas a partir de um ficheiro CSV (`recipes.csv`) com os s
 * `tempo_total`
 * `calorias`
 * `rating`
+* `porcoes`
 * `ingredientes`
 * `passos`
 * `criterios`
@@ -137,7 +143,7 @@ Os campos de lista usam o separador `|`.
 
 ---
 
-## 📚 Contexto Académico
+## Contexto Académico
 
 Este projeto foi desenvolvido no âmbito de uma unidade curricular de **Introdução à Inteligência Artificial**, com foco em:
 
@@ -147,7 +153,7 @@ Este projeto foi desenvolvido no âmbito de uma unidade curricular de **Introdu�
 
 ---
 
-## 👤 Autores 
+## Autores 
 
 Desenvolvido por: 
 **Tomás Henrique Alves Melo** - PG60018 
@@ -157,7 +163,7 @@ Desenvolvido por:
 
 ---
 
-## 📝 Licença
+## Licença
 
 Este projeto é de uso académico.
 Uso comercial sujeito a autorização do autor.
