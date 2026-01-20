@@ -160,7 +160,7 @@ Este projeto obteve a seguinte classificação final na unidade curricular
 
 - **Nota final:** 19/20  
 - **Ano letivo:** 2025/2026  
-- **Instituição:** [Universidade do Minho]
+- **Instituição:** Universidade do Minho
 
 --- 
 
@@ -178,5 +178,6 @@ Desenvolvido por:
 ## Licença
 
 Este projeto é de uso académico.
+
 Uso comercial sujeito a autorização dos autores.
 
