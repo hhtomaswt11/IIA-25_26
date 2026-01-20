@@ -153,18 +153,30 @@ Este projeto foi desenvolvido no âmbito de uma unidade curricular de **Introdu�
 
 ---
 
+## Avaliação Final
+
+Este projeto obteve a seguinte classificação final na unidade curricular
+**Introdução à Inteligência Artificial**:
+
+- **Nota final:** 19/20  
+- **Ano letivo:** 2025/2026  
+- **Instituição:** [Universidade do Minho]
+
+--- 
+
 ## Autores 
 
 Desenvolvido por: 
-**Tomás Henrique Alves Melo** - PG60018 
-**Rodrigo Miguel Granja Ferreira** - PG60392
-**Luís Pinto da Cunha** - PG60280 
-**Nuno Filipe Leite Oliveira Araújo** - PG61218 
+
+- **Tomás Henrique Alves Melo** - PG60018 
+- **Rodrigo Miguel Granja Ferreira** - PG60392
+- **Luís Pinto da Cunha** - PG60280 
+- **Nuno Filipe Leite Oliveira Araújo** - PG61218 
 
 ---
 
 ## Licença
 
 Este projeto é de uso académico.
-Uso comercial sujeito a autorização do autor.
+Uso comercial sujeito a autorização dos autores.
 
